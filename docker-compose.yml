@@ -1,54 +1,43 @@
-version: "3.8"
-
+version: "1.2"
 services:
-  # ──────────────── Database ────────────────
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./cloudflared:/etc/cloudflared
+    command: tunnel run --token ${CF_TUNNEL_TOKEN}
+
   db:
     image: mariadb:10.9
     restart: unless-stopped
+    env_file: .env
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${NEXTCLOUD_DB_NAME}
-      - MYSQL_USER=${NEXTCLOUD_DB_USER}
-      - MYSQL_PASSWORD=${NEXTCLOUD_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${NEXTCLOUD_DB_NAME}
+      MYSQL_USER: ${NEXTCLOUD_DB_USER}
+      MYSQL_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
 
-  # ──────────────── Redis cache ────────────────
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    command: redis-server --requirepass "${REDIS_PASSWORD:-}"
-
-  # ──────────────── Nextcloud ────────────────
   nextcloud:
     image: nextcloud:latest
     restart: unless-stopped
+    env_file: .env
     depends_on:
       - db
-      - redis
-    env_file: .env
-    environment:
-      # tell Nextcloud to use Redis for memcache
-      - REDIS_HOST=redis
-      - REDIS_HOST_PASSWORD=${REDIS_PASSWORD:-}
+    # ─────────────── Montages requis ───────────────
     volumes:
+      # données Nextcloud
       - nextcloud_data:/var/www/html
-      - ./theme/uqo:/var/www/html/themes/my-school:ro
+      # votre thème personnalisé (lecture seule)
+      - ./themes/my-school:/var/www/html/themes/my-school:ro
+      # script d'init au démarrage
       - ./scripts/initialize.sh:/docker-entrypoint.d/initialize.sh:ro
-    labels:
-      # (if you run your own reverse proxy—see next section)
-      - "traefik.enable=true"
-      - "traefik.http.routers.nextcloud.rule=Host(`${NEXTCLOUD_HOST}`)"
-      - "traefik.http.routers.nextcloud.entrypoints=websecure"
-      - "traefik.http.routers.nextcloud.tls.certresolver=cloudflare"
     networks:
-      - web
+      - default
 
 volumes:
-  db_data:
   nextcloud_data:
-
-networks:
-  web:
-    external: true   # assumed you have a 'web' network for your proxy/tunnel
+  db_data:
 
