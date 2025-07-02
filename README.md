@@ -22,24 +22,20 @@
 cp .env.secret .env
 ```
 
-## 2. Configurer le tunnel Cloudflare (ou le port forwarding au choix)
-
-pour tester l'application on la host sur un serveur proxmox avec un tunnel Cloudflare. 
-
-## 3. Rendre le script d’initialisation exécutable
+## 2. Rendre le script d’initialisation exécutable
 
 ```bash
 chmod +x scripts/initialize.sh
 ```
 
-## 4. Lancer le stack
+## 3. Lancer le stack
 
 ```bash
 # démarre la base de données, Nextcloud et le Tunnel Cloudflare
 docker-compose up -d
 ```
 
-## 5. Finaliser l’installation via l’interface Web
+## 4. Finaliser l’installation via l’interface Web
 
 1. Ouvrez votre navigateur sur **https\://`${NEXTCLOUD_HOST}`**.
 2. Créez l’utilisateur **admin** et son mot de passe.
@@ -52,6 +48,10 @@ docker-compose up -d
 > * désactiver les apps inutiles,
 > * créer le groupe `calendar-creators` et ses utilisateurs,
 > * partager le calendrier en lecture publique et avec droits d’édition pour le groupe.
+
+## 5. Configurer le tunnel Cloudflare (ou le port forwarding au choix)
+
+pour tester l'application on la host sur un serveur proxmox avec un tunnel Cloudflare. 
 
 ## 6. Étapes post-installation
 
