@@ -1,8 +1,0 @@
-tunnel: ${CF_TUNNEL_ID}
-credentials-file: /etc/cloudflared/cred-${CF_TUNNEL_ID}.json
-
-ingress:
-  - hostname: ${NEXTCLOUD_HOST}
-    service: http://nextcloud:80
-  - service: http_status:404
-
