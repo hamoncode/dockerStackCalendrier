@@ -32,6 +32,5 @@ services:
       - default
 
 volumes:
-  nextcloud_data:
   db_data:
-
+  nextcloud_data:
