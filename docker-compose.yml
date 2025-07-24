@@ -27,7 +27,7 @@ services:
     # no env_file needed if your script just reads /data/calendar_feeds.env
     volumes:
       - calendar-data:/data
-      - ./sync/calendar_feeds.env:/data/calendar_feeds.env:ro
+      - ./data/calendar_feeds.env:/data/calendar_feeds.env:ro
 
 volumes:
   db_data:
