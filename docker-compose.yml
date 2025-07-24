@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   db:
     image: mariadb:10.9
@@ -27,8 +26,8 @@ services:
     restart: always
     # no env_file needed if your script just reads /data/calendar_feeds.env
     volumes:
-      - ./sync/calendar_feeds.env:/data/calendar_feeds.env:ro
       - calendar-data:/data
+      - ./sync/calendar_feeds.env:/data/calendar_feeds.env:ro
 
 volumes:
   db_data:
