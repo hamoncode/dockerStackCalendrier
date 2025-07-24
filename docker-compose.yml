@@ -29,8 +29,16 @@ services:
       - nextcloud_data:/var/www/html
       - ./themes/my-school:/var/www/html/themes/my-school:ro
       - ./scripts/initialize.sh:/docker-entrypoint.d/initialize.sh:ro
+   
+  calendar-sync:
+    build:
+      context: ./sync
+    restart: always
+    env_file: .env        # bring in ICS_URL, DEST_DIR, etc.
+    volumes:
+      - calendar-data:/data
 
 volumes:
   db_data:
   nextcloud_data:
-
+  calendar-data:
