@@ -3,6 +3,11 @@ services:
     image: mariadb:10.9
     restart: unless-stopped
     env_file: .env
+    environment:
+      - MARIADB_ROOT_PASSWORD
+      - MARIADB_DATABASE
+      - MARIADB_USER
+      - MARIADB_PASSWORD
     volumes:
       - db_data:/var/lib/mysql
 
@@ -14,11 +19,15 @@ services:
       - db
     ports:
       - "8080:80"
+    environment:
+      - MYSQL_HOST
+      - MYSQL_DATABASE
+      - MYSQL_USER
+      - MYSQL_PASSWORD
     volumes:
       - nextcloud_data:/var/www/html
       - ./themes/my-school:/var/www/html/themes/my-school:ro
       - ./scripts/initialize.sh:/docker-entrypoint.d/initialize.sh:ro
-      - calendar-data:/var/www/html/public_calendars:ro
 
   calendar-sync:
     build:
