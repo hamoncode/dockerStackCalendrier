@@ -1,25 +1,46 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# — CONFIG: set these to your values
-ICS_URL="https://nextcloud.example.com/remote.php/dav/calendars/user/calendar.ics"
-DEST="/var/www/static-calendar/calendar.ics"
+# — Path to your feeds file (one NAME=URL per line)
+FEEDS_FILE="${FEEDS_FILE:-/data/calendar_feeds.env}"
 
-# work in a safe temp dir
-TMP="$(mktemp --tmpdir sync.XXXXXX.ics)"
+# — Where to write the .ics files
+DEST_DIR="${DEST_DIR:-/var/www/static-calendar}"
 
-# try to fetch only if newer
-curl -fsS --time-cond "$DEST" -o "$TMP" "$ICS_URL" \
-  || { echo "❌ curl failed"; rm -f "$TMP"; exit 1; }
+# load into an associative array
+declare -A FEEDS
+while IFS='=' read -r name url; do
+  [[ -z "$name" || -z "$url" ]] && continue
+  FEEDS[$name]="$url"
+done < "$FEEDS_FILE"
 
-# if curl saw “Not Modified” it will write an empty file of size zero
-if [[ ! -s "$TMP" ]]; then
-  echo "ℹ️  No updates, leaving existing calendar."
-  rm -f "$TMP"
-  exit 0
-fi
+# make sure dest exists
+mkdir -p "$DEST_DIR"
 
-# atomically replace
-mv "$TMP" "$DEST"
-echo " Calendar updated at $(date --iso-8601=seconds)"
+# temporary work dir
+TMPDIR=$(mktemp -d)
+
+for assoc in "${!FEEDS[@]}"; do
+  URL="${FEEDS[$assoc]}"
+  DEST_FILE="$DEST_DIR/${assoc}.ics"
+  TMP_FILE="$TMPDIR/${assoc}.ics"
+
+  # fetch only if newer
+  if ! curl -fsS --time-cond "$DEST_FILE" -o "$TMP_FILE" "$URL"; then
+    echo "❌ [$assoc] fetch failed"
+    continue
+  fi
+
+  # if non-empty, replace; else skip
+  if [[ -s "$TMP_FILE" ]]; then
+    mv "$TMP_FILE" "$DEST_FILE"
+    echo " [$assoc] updated at $(date --iso-8601=seconds)"
+  else
+    echo "ℹ️  [$assoc] no change"
+    rm -f "$TMP_FILE"
+  fi
+done
+
+# clean up
+rmdir "$TMPDIR"
 

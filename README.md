@@ -61,4 +61,31 @@ docker-compose exec nextcloud occ maintenance:repair
 # optionnel : nettoyer le cache des fichiers
 docker-compose exec nextcloud occ files:cleanup
 ```
+## comment ajouter une association 
+
+## Ajouter une nouvelle association
+
+Pour ajouter le calendrier d’une association étudiante, suivez ces étapes :
+
+1. **Créer un calendrier dans Nextcloud**  
+   - Connectez-vous à Nextcloud en tant qu’utilisateur « calendar‑admin ».  
+   - Ouvrez l’application **Calendrier** et cliquez sur **+ Nouveau calendrier**.  
+   - Donnez‑lui le nom de l’association (par exemple `ChessClub`).
+
+2. **Rendre le calendrier public**  
+   - Survolez votre nouveau calendrier, cliquez sur **⋯ → Paramètres et partage**.  
+   - Sous **« Partager via un lien »**, activez **« Autoriser le partage public »** (icône globe).  
+   - Copiez l’URL **Abonnement au calendrier (ICS)**.
+
+3. **Enregistrer le flux dans la config de synchronisation**  
+   - Ouvrez `sync/calendar_sync.sh` (ou l’emplacement de votre tableau `FEEDS`).  
+   - Ajoutez une nouvelle entrée au tableau `FEEDS`, par exemple :  
+     ```bash
+     FEEDS+=( ["ChessClub"]="https://nextcloud.example.com/remote.php/dav/public-caldav/…/ChessClub.ics" )
+     ```  
+   - Enregistrez vos modifications.
+
+4. **Déployer le conteneur de synchronisation mis à jour**  
+   ```bash
+   docker-compose up -d --no-deps --build calendar-sync
 

@@ -1,0 +1,3 @@
+# run calendar_sync.sh every minute
+* * * * * /usr/local/bin/calendar_sync.sh >> /var/log/cron.log 2>&1
+
