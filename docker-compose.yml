@@ -1,5 +1,19 @@
 version: "3.8"
+
 services:
+  calendar:
+    build:
+      context: ./calendar-app      # chemin vers le dossier contenant votre Dockerfile
+      dockerfile: Dockerfile
+    container_name: calendar
+    ports:
+      - "8081:80"                  # mappe le port 80 du container sur le port 8081 de l’hôte
+    volumes:
+      - ./calendar-app/public:/usr/share/nginx/html:ro
+    restart: unless-stopped
+    networks:
+      - web
+
   db:
     image: mariadb:10.9
     restart: unless-stopped
@@ -11,6 +25,8 @@ services:
       - MARIADB_PASSWORD
     volumes:
       - db_data:/var/lib/mysql
+    networks:
+      - web
 
   nextcloud:
     image: nextcloud:latest
@@ -29,8 +45,14 @@ services:
       - nextcloud_data:/var/www/html
       - ./themes/my-school:/var/www/html/themes/my-school:ro
       - ./scripts/initialize.sh:/docker-entrypoint.d/initialize.sh:ro
+    networks:
+      - web
 
 volumes:
   db_data:
   nextcloud_data:
+
+networks:
+  web:
+    external: true
 
