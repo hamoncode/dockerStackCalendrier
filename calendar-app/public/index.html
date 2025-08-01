@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Public Calendar</title>
+	<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js"></script>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 1rem;
+		}
+
+		#filters {
+			margin-bottom: 1rem;
+		}
+
+		#filters label {
+			margin-right: 1em;
+		}
+
+		#calendar {
+			max-width: 900px;
+			margin: 0 auto;
+		}
+
+		/* Backdrop */
+		#detailBackdrop {
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.5);
+			z-index: 900;
+		}
+
+		/* Modal */
+		#detailModal {
+			display: none;
+			position: fixed;
+			top: 20%;
+			left: 50%;
+			transform: translateX(-50%);
+			background: #fff;
+			padding: 1rem;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+			z-index: 1000;
+			max-width: 400px;
+			width: 90%;
+		}
+
+		#detailModal img {
+			max-width: 100%;
+			margin-top: .5rem;
+		}
+
+		#detailModal button {
+			float: right;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div id="filters">Loading filters…</div>
+	<div id="calendar"></div>
+
+	<!-- Backdrop & Modal -->
+	<div id="detailBackdrop" onclick="closeModal()"></div>
+	<div id="detailModal">
+		<button onclick="closeModal()">×</button>
+		<h2 id="modalTitle"></h2>
+		<p><strong>Date:</strong> <span id="modalDate"></span></p>
+		<p><strong>Location:</strong> <span id="modalLocation"></span></p>
+		<img id="modalImage" src="" alt="" style="display:none;">
+		<p id="modalDesc"></p>
+		<p><a id="modalLink" href="#" target="_blank" style="display:none;">More info →</a></p>
+	</div>
+
+	<script>
+		let eventsData = [];
+		let assocColors = {};
+
+		function closeModal() {
+			document.getElementById('detailModal').style.display = 'none';
+			document.getElementById('detailBackdrop').style.display = 'none';
+		}
+
+		document.addEventListener('DOMContentLoaded', () => {
+			const filtersEl = document.getElementById('filters');
+			const calEl = document.getElementById('calendar');
+
+			// 1) Load association-color map
+			fetch('/assoc-colors.json')
+				.then(r => r.json())
+				.then(colors => {
+					assocColors = colors;
+					// 2) Then load your events.json
+					return fetch('/events.json').then(r => r.json());
+				})
+				.then(data => {
+					// inject colors
+					eventsData = data.map(e => {
+						const c = assocColors[e.extendedProps.association] || '#3788d8';
+						return {...e, backgroundColor: c, borderColor: c};
+					});
+
+					// build filters dynamically
+					const assocs = Array.from(new Set(eventsData.map(e => e.extendedProps.association)));
+					filtersEl.innerHTML = '';
+					assocs.forEach(assoc => {
+						const id = `f-${assoc}`;
+						const cb = document.createElement('input');
+						cb.type = 'checkbox'; cb.id = id; cb.value = assoc; cb.checked = true;
+						const lbl = document.createElement('label');
+						lbl.htmlFor = id; lbl.append(cb, ' ', assoc);
+						filtersEl.append(lbl);
+
+						cb.addEventListener('change', () => calendar.refetchEvents());
+					});
+
+					// 3) Initialize FullCalendar
+					window.calendar = new FullCalendar.Calendar(calEl, {
+						initialView: 'dayGridMonth',
+						headerToolbar: {
+							left: 'prev,next today',
+							center: 'title',
+							right: 'dayGridMonth,timeGridWeek,timeGridDay'
+						},
+						eventSources: [{
+							events: (info, success) => {
+								const chosen = Array.from(filtersEl.querySelectorAll('input:checked'))
+									.map(cb => cb.value);
+								const filtered = eventsData.filter(e =>
+									chosen.includes(e.extendedProps.association)
+								);
+								success(filtered);
+							}
+						}],
+						eventClick: info => {
+							const e = info.event;
+							document.getElementById('modalTitle').innerText = e.title;
+							document.getElementById('modalDate').innerText = e.allDay
+								? e.start.toLocaleDateString()
+								: `${e.start.toLocaleString()} → ${e.end ? e.end.toLocaleString() : ''}`;
+							document.getElementById('modalLocation').innerText = e.extendedProps.location || '—';
+							document.getElementById('modalDesc').innerText = e.extendedProps.description || '';
+
+							const img = document.getElementById('modalImage');
+							if (e.extendedProps.image) {
+								img.src = e.extendedProps.image;
+								img.style.display = 'block';
+							} else {
+								img.style.display = 'none';
+							}
+
+							const link = document.getElementById('modalLink');
+							const href = e.extendedProps.registrationLink || e.url;
+							if (href) {
+								link.href = href;
+								link.style.display = 'inline-block';
+							} else {
+								link.style.display = 'none';
+							}
+
+							document.getElementById('detailBackdrop').style.display = 'block';
+							document.getElementById('detailModal').style.display = 'block';
+						}
+					});
+
+					calendar.render();
+				})
+				.catch(err => console.error('Loading error:', err));
+		});
+	</script>
+</body>
+
+</html>

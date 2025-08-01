@@ -1,0 +1,77 @@
+[
+  {
+    "id": "1",
+    "title": "Atelier Python",
+    "start": "2025-08-05T18:00:00",
+    "end":   "2025-08-05T20:00:00",
+    "allDay": false,
+    "extendedProps": {
+      "association": "REI",
+      "description": "Initiez-vous à Python en créant un mini-projet.",
+      "location": "Salle 101",
+      "image": "atelier-python.jpg"
+    }
+  },
+  {
+    "id": "2",
+    "title": "Hackathon d’été",
+    "start": "2025-08-12T09:00:00",
+    "end":   "2025-08-13T17:00:00",
+    "allDay": false,
+    "extendedProps": {
+      "association": "REMMA",
+      "description": "48h de coding non-stop par équipes de 4.",
+      "location": "Lab Informatique",
+      "registrationLink": "https://remma.example/inscription"
+    }
+  },
+  {
+    "id": "3",
+    "title": "Barbecue d’été",
+    "start": "2025-08-15T12:00:00",
+    "allDay": false,
+    "extendedProps": {
+      "association": "REMMA",
+      "description": "Rencontre conviviale au parc central.",
+      "location": "Parc Central"
+    }
+  },
+  {
+    "id": "4",
+    "title": "Session de révision",
+    "start": "2025-08-20T14:00:00",
+    "end":   "2025-08-20T17:00:00",
+    "allDay": false,
+    "extendedProps": {
+      "association": "REI",
+      "description": "Préparation aux examens d’automne.",
+      "location": "Bibliothèque",
+      "speaker": "Prof. Martin"
+    }
+  },
+  {
+    "id": "5",
+    "title": "Journée Santé",
+    "start": "2025-08-22",
+    "end":   "2025-08-22",
+    "allDay": true,
+    "extendedProps": {
+      "association": "AGE",
+      "description": "Sensibilisation aux bonnes pratiques de santé.",
+      "location": "Hall Principal"
+    }
+  },
+  {
+    "id": "6",
+    "title": "Projection en plein air",
+    "start": "2025-08-28T19:30:00",
+    "allDay": false,
+    "extendedProps": {
+      "association": "Tonik",
+      "description": "Film gratuit sous les étoiles.",
+      "location": "Cour d’honneur",
+      "registrationLink": "https://cineclub.example/inscription"
+    }
+  }
+]
+
