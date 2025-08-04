@@ -15,6 +15,31 @@
 
 ---
 
+## workflow du script de convertions ics vers json
+
+
+```mermaid
+flowchart TD
+  A[Start] --> B[Load .env & FEEDS mapping]
+  B --> C[Init events list & counter]
+  C --> D{Have more feeds?}
+  D -->|Yes| E[Fetch ICS URL for current association]
+  E --> F[Parse ICS into Calendar object]
+  F --> G{More VEVENTs?}
+  G -->|Yes| H[Extract dtstart, dtend, summary, description, location, url]
+  H --> I[Normalize dates → ISO strings]
+  I --> J[Build JSON event dict]
+  J --> K[Append event to list & increment counter]
+  K --> G
+  G -->|No| D
+  D -->|No| L[Write `events.json` to disk]
+  L --> M[Sleep 30 minutes]
+  M --> C
+
+```
+
+---
+
 
 ## 1. importer les secrets dans `.env`
 
