@@ -47,7 +47,16 @@ services:
       - ./scripts/initialize.sh:/docker-entrypoint.d/initialize.sh:ro
     networks:
       - web
-
+  converter:
+    build:
+      context: ./icsToJson
+    env_file:
+      - .env
+    volumes:
+      - ./calendar-app/public:/app/calendar-app/public
+    depends_on:
+      - nextcloud
+      - calendar-app
 volumes:
   db_data:
   nextcloud_data:
