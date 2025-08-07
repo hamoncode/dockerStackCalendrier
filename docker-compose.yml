@@ -49,10 +49,16 @@ services:
     environment:
       INTERVAL: 60                     # still how often to refresh
       FEEDS_FILE: /config/feeds.txt    # optional; matches the script default
+      OUTPUT: /app/calendar-app/public/events.json
+      PYTHONUNBUFFERED: "1"
     volumes:
       - ./calendar-app/public:/app/calendar-app/public
       - ./icsToJson/feeds.txt:/config/feeds.txt:ro
+    depends_on:
+      - nextcloud
     restart: unless-stopped
+    networks:
+      - web
 
 volumes:
   db_data:
