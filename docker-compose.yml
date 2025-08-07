@@ -54,7 +54,7 @@ services:
       - ./calendar-app/public:/app/calendar-app/public
     depends_on:
       - nextcloud
-      - calendar-app
+      - calendar
 volumes:
   db_data:
   nextcloud_data:
