@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-import os, json
-import requests
+
+from dotenv import load_dotenv
+load_dotenv()  
+
+import os, json, requests
 from icalendar import Calendar
 from datetime import datetime
 from dateutil.tz import tzutc
+
+
 
 # 1) configure your feeds → map a “slug” to its ICS URL
 FEEDS = {

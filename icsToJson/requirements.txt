@@ -1,4 +1,4 @@
 requests
 icalendar
 python-dateutil
-
+python-dotenv
