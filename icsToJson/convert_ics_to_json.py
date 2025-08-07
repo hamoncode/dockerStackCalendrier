@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-
-from dotenv import load_dotenv
-load_dotenv()  
-
 import os, json, requests
 from icalendar import Calendar
 from datetime import datetime
