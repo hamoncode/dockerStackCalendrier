@@ -7,7 +7,6 @@ services:
       - "8081:80"                  # mappe le port 80 du container sur le port 8081 de l’hôte
     volumes:
       - ./calendar-app/public:/usr/share/nginx/html:ro
-      - ./calendar-app/public/images:/usr/share/nginx/html/images:ro
     restart: unless-stopped
     networks:
       - web
