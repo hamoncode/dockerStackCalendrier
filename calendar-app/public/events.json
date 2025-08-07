@@ -1,6 +1,19 @@
 [
   {
     "id": "1",
+    "title": "test",
+    "start": "2025-08-21",
+    "end": "2025-08-22",
+    "allDay": true,
+    "extendedProps": {
+      "association": "REI",
+      "description": "",
+      "location": "",
+      "image": "images/rei.jpg"
+    }
+  },
+  {
+    "id": "2",
     "title": "hello there",
     "start": "2025-08-12",
     "end": "2025-08-13",
@@ -13,7 +26,7 @@
     }
   },
   {
-    "id": "2",
+    "id": "3",
     "title": "REI ad",
     "start": "2025-08-15",
     "end": "2025-08-16",
@@ -26,10 +39,23 @@
     }
   },
   {
-    "id": "3",
-    "title": "test",
-    "start": "2025-08-21",
-    "end": "2025-08-22",
+    "id": "4",
+    "title": "test test test",
+    "start": "2025-08-19",
+    "end": "2025-08-20",
+    "allDay": true,
+    "extendedProps": {
+      "association": "REI",
+      "description": "",
+      "location": "",
+      "image": "images/rei.jpg"
+    }
+  },
+  {
+    "id": "5",
+    "title": "test 1 2 test 12",
+    "start": "2025-08-20",
+    "end": "2025-08-21",
     "allDay": true,
     "extendedProps": {
       "association": "REI",

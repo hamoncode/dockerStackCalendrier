@@ -1,1 +1,2 @@
-REI_ICS=http://100.86.213.41:8080/remote.php/dav/public-calendars/KyzCEYs7Ss8p3bAY?export
+REI=http://nextcloud/remote.php/dav/public-calendars/KyzCEYs7Ss8p3bAY?export
+
