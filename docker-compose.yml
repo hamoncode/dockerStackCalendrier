@@ -47,13 +47,13 @@ services:
   converter:
     build:
       context: ./icsToJson
+      dockerfile: Dockerfile
     env_file:
-      - .env
+      - ./icsToJson/.env
     volumes:
       - ./calendar-app/public:/app/calendar-app/public
-    depends_on:
-      - nextcloud
-      - calendar
+    restart: unless-stopped
+
 volumes:
   db_data:
   nextcloud_data:
