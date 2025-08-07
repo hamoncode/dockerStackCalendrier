@@ -46,10 +46,12 @@ services:
   converter:
     build:
       context: ./icsToJson
-    env_file:
-      - ./icsToJson/.env
+    environment:
+      INTERVAL: 60                     # still how often to refresh
+      FEEDS_FILE: /config/feeds.txt    # optional; matches the script default
     volumes:
       - ./calendar-app/public:/app/calendar-app/public
+      - ./icsToJson/feeds.txt:/config/feeds.txt:ro
     restart: unless-stopped
 
 volumes:
