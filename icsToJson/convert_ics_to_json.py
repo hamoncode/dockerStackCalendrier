@@ -7,10 +7,7 @@ from dateutil.tz import tzutc
 
 # 1) configure your feeds → map a “slug” to its ICS URL
 FEEDS = {
-    "Tonik": os.environ.get("TONIK_ICS"),
-    "AGE":   os.environ.get("AGE_ICS"),
     "REI":   os.environ.get("REI_ICS"),
-    "REMMA": os.environ.get("REMMA_ICS"),
 }
 
 OUTPUT = "calendar-app/public/events.json"
