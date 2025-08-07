@@ -1,6 +1,5 @@
 services:
   calendar:
-    build:
     image : nginx:stable-alpine
     container_name: calendar
     ports:
