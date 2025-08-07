@@ -46,7 +46,6 @@ services:
   converter:
     build:
       context: ./icsToJson
-      dockerfile: Dockerfile
     env_file:
       - ./icsToJson/.env
     volumes:
