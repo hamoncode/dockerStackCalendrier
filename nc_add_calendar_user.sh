@@ -5,11 +5,56 @@ set -euo pipefail
 NC_CONTAINER="${NC_CONTAINER:-dockerstackcalendrier-nextcloud-1}"
 CAL_GROUP="calendar-only"
 TEMP_PASS="${TEMP_PASS:-Welcome1}"
-TINY_QUOTA="${TINY_QUOTA:-1 B}"   # safer than 0 B on some Nextcloud versions
+# Use a small quota to block Files; we'll temporarily lift it for first login tasks
+SETUP_QUOTA="${SETUP_QUOTA:-10 MB}"
+LOCKED_QUOTA="${LOCKED_QUOTA:-1 B}"
+
+# Your external Nextcloud base URL (MUST be in Nextcloud trusted domains)
+NC_BASE_URL="${NC_BASE_URL:-https://cloud.reiuqode.com}"
+
+# If using a self-signed cert, set CURL_INSECURE=1 in env when running the script
+CURL_FLAGS=()
+[[ "${CURL_INSECURE:-0}" == "1" ]] && CURL_FLAGS+=(-k)
 
 # ====== Helpers ======
 occ () {
   docker exec -u www-data -w /var/www/html "$NC_CONTAINER" php occ "$@"
+}
+
+rename_personal_calendar () {
+  local user="$1"
+  local pass="$2"
+  local newname="$3"
+
+  # CalDAV URL for the default calendar (slug is 'personal' regardless of UI language)
+  local url="${NC_BASE_URL%/}/remote.php/dav/calendars/${user}/personal/"
+
+  # Send PROPPATCH to set DAV:displayname = username
+  # Expected status is 207 (Multi-Status) when successful.
+  local body status
+  body="$(curl -sS -u "${user}:${pass}" -X PROPPATCH -H 'Content-Type: application/xml; charset=utf-8' \
+    --data-binary @- "${CURL_FLAGS[@]}" "$url" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<d:propertyupdate xmlns:d="DAV:">
+  <d:set>
+    <d:prop>
+      <d:displayname>${newname}</d:displayname>
+    </d:prop>
+  </d:set>
+</d:propertyupdate>
+EOF
+)"
+  # Rough success check: look for HTTP/1.1 200 OK inside multistatus or no obvious error
+  if echo "$body" | grep -qE 'HTTP/1\.1 2.. OK|<d:status>HTTP/1\.1 2..'; then
+    echo "   ✓ Renamed default calendar to '${newname}'"
+    return 0
+  fi
+
+  # If rename failed (e.g., calendar not created yet), just report it.
+  echo "   ! Could not rename 'personal' calendar (maybe it doesn't exist yet)."
+  echo "     Response:"
+  echo "$body" | sed 's/^/       /'
+  return 1
 }
 
 # ====== Pre-flight ======
@@ -21,7 +66,6 @@ fi
 # ====== Ask for input ======
 read -rp "Enter new username: " USER
 read -rp "Enter email for $USER: " EMAIL
-
 if [[ -z "$USER" ]]; then
   echo "Username cannot be empty." >&2
   exit 1
@@ -34,26 +78,36 @@ occ app:enable calendar
 occ app:install apporder || true
 occ app:enable apporder
 
-# ====== Create user ======
-export OC_PASS="$TEMP_PASS"
-echo "Creating user '$USER' with temporary password '$TEMP_PASS'..."
-occ user:add --password-from-env --group "$CAL_GROUP" --display-name "$USER" "$USER"
+# Disable skeleton contents (prevents quota-related 500s on first login)
+occ config:system:set skeletondirectory --value=""
 
-# Set email
+# Make Calendar the default app (optional; comment out if not desired)
+occ config:system:set defaultapp --value="calendar"
+
+# ====== Create user ======
+echo "Creating user '$USER' with temporary password '${TEMP_PASS}'..."
+docker exec -e OC_PASS="${TEMP_PASS}" -u www-data -w /var/www/html \
+  "$NC_CONTAINER" php occ user:add --password-from-env \
+  --group "$CAL_GROUP" --display-name "$USER" "$USER"
+
+# Set email (optional)
 if [[ -n "$EMAIL" ]]; then
   occ user:setting "$USER" settings email "$EMAIL"
 fi
 
-# Block Files with tiny quota
-occ user:setting "$USER" files quota "$TINY_QUOTA"
+# Give a small temporary quota so the account can initialize cleanly
+occ user:setting "$USER" files quota "$SETUP_QUOTA"
 
-# Make Calendar the default app (optional)
-occ config:system:set defaultapp --value="calendar"
+# ====== Rename the default calendar 'personal' to the username ======
+rename_personal_calendar "$USER" "$TEMP_PASS" "$USER" || true
 
-echo "✅ User '$USER' created."
-echo "   Email: $EMAIL"
-echo "   Temp password: $TEMP_PASS"
+# Lock files usage down after initialization
+occ user:setting "$USER" files quota "$LOCKED_QUOTA"
+
+echo "✅ User '$USER' ready."
+echo "   Email: ${EMAIL:-<none>}"
+echo "   Temp password: ${TEMP_PASS}"
 echo "   Group: $CAL_GROUP"
-echo "   Quota: $TINY_QUOTA"
-echo
-echo "⚠️  Advise the user to log in and change their password immediately."
+echo "   Quota now: $LOCKED_QUOTA (was $SETUP_QUOTA for setup)"
+echo "   Calendar renamed to: $USER (if default existed)"
+echo "⚠️ Ask the user to log in and change their password immediately."
