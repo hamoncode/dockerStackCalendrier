@@ -59,7 +59,6 @@ services:
       IMAGE_OUT_DIR: /app/calendar-app/public/images
       IMAGE_INTERVAL: 300
       PYTHONUNBUFFERED: "1"
-      IMAGE_SRC_REI: /ncdata/data/rei/files/Calendar
     volumes:
       - nextcloud_data:/ncdata:ro
       - ./calendar-app/public:/app/calendar-app/public
