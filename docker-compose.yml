@@ -47,13 +47,16 @@ services:
     build:
       context: ./icsToJson
     environment:
-      INTERVAL: 60                     # still how often to refresh
-      FEEDS_FILE: /config/feeds.txt    # optional; matches the script default
+      INTERVAL: 60                     
+      FEEDS_FILE: /config/feeds.txt    
+      IMAGE_OUT_DIR: /app/calendar-app/public/images
       OUTPUT: /app/calendar-app/public/events.json
+      IMAGE_FEEDS_FILE: /config/image_feeds.txt
       PYTHONUNBUFFERED: "1"
     volumes:
       - ./calendar-app/public:/app/calendar-app/public
       - ./icsToJson/feeds.txt:/config/feeds.txt:ro
+      - ./icsToJson/image_feeds.txt:/config/image_feeds.txt:ro  
     depends_on:
       - nextcloud
     restart: unless-stopped
