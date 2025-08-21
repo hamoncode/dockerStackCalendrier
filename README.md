@@ -87,3 +87,23 @@ docker-compose exec nextcloud occ maintenance:repair
 docker-compose exec nextcloud occ files:cleanup
 ```
 
+## steps d'installation docker-compose
+
+```bash
+# créer le réseau Docker si nécessaire
+docker network create web || true
+
+# lancer le stack
+
+docker-compose up -d
+
+# vérifier que tout est en ordre
+docker-compose ps
+
+# vérifier les logs
+
+docker-compose logs -f
+
+# pour arrêter le stack
+docker-compose down
+```

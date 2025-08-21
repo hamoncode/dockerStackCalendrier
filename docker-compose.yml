@@ -31,7 +31,7 @@ services:
     depends_on:
       - db
     ports:
-      - "8080:80"
+      - "8083:80"
     environment:
       - MYSQL_HOST
       - MYSQL_DATABASE
@@ -47,11 +47,18 @@ services:
     build:
       context: ./icsToJson
     environment:
-      INTERVAL: 60                     # still how often to refresh
-      FEEDS_FILE: /config/feeds.txt    # optional; matches the script default
+      #events 
+      INTERVAL: 60                     
+      FEEDS_FILE: /config/feeds.txt    
       OUTPUT: /app/calendar-app/public/events.json
+      #images
+      NC_DATA_ROOT: /ncdata
+      IMAGE_SRC_TEMPLATE: "/ncdata/data/{slug}/files/Calendar"
+      IMAGE_OUT_DIR: /app/calendar-app/public/images
+      IMAGE_INTERVAL: 300
       PYTHONUNBUFFERED: "1"
     volumes:
+      - nextcloud_data:/ncdata:ro
       - ./calendar-app/public:/app/calendar-app/public
       - ./icsToJson/feeds.txt:/config/feeds.txt:ro
     depends_on:
