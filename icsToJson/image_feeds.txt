@@ -1,0 +1,2 @@
+http://nextcloud/remote.php/dav/files/REI/Calendar/  REI  ${REI_PASS}
+
