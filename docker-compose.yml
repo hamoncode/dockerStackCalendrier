@@ -47,11 +47,11 @@ services:
     build:
       context: ./icsToJson
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "host.docker.internal:172.20.0.1"
     environment:
       #events 
-      INTERVAL: 60                     
-      FEEDS_FILE: /config/feeds.txt    
+      INTERVAL: 60
+      FEEDS_FILE: /config/feeds.txt
       OUTPUT: /app/calendar-app/public/events.json
       #images
       NC_DATA_ROOT: /ncdata
