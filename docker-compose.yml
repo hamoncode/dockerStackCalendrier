@@ -46,8 +46,7 @@ services:
   converter:
     build:
       context: ./icsToJson
-    extra_hosts:
-      - "host.docker.internal:172.20.0.1"
+    network_mode: host
     environment:
       #events 
       INTERVAL: 60
