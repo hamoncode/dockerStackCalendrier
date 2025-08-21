@@ -1,1 +1,1 @@
-REI=http://nextcloud/remote.php/dav/public-calendars/KyzCEYs7Ss8p3bAY?export
+REI=http://host.docker.internal:8083/remote.php/dav/public-calendars/KyzCEYs7Ss8p3bAY?export
