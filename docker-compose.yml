@@ -3,7 +3,7 @@ services:
     image : nginx:stable-alpine
     container_name: calendar
     ports:
-      - "8081:80"                  # mappe le port 80 du container sur le port 8081 de l’hôte
+      - "8081:80"                 
     volumes:
       - ./calendar-app/public:/usr/share/nginx/html:ro
     restart: unless-stopped
@@ -46,6 +46,8 @@ services:
   converter:
     build:
       context: ./icsToJson
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       #events 
       INTERVAL: 60                     
@@ -57,6 +59,7 @@ services:
       IMAGE_OUT_DIR: /app/calendar-app/public/images
       IMAGE_INTERVAL: 300
       PYTHONUNBUFFERED: "1"
+      IMAGE_SRC_REI: /ncdata/data/rei/files/Calendar
     volumes:
       - nextcloud_data:/ncdata:ro
       - ./calendar-app/public:/app/calendar-app/public
