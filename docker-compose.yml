@@ -7,8 +7,7 @@ services:
     volumes:
       - ./calendar-app/public:/usr/share/nginx/html:ro
     restart: unless-stopped
-    networks:
-      - web
+    networks: [web]
 
   db:
     image: mariadb:10.9
@@ -21,15 +20,13 @@ services:
       - MARIADB_PASSWORD
     volumes:
       - db_data:/var/lib/mysql
-    networks:
-      - web
+    networks: [internal]
 
   nextcloud:
     image: nextcloud:latest
     restart: unless-stopped
     env_file: .env
-    depends_on:
-      - db
+    depends_on: [db]
     ports:
       - "8083:80"
     environment:
@@ -42,17 +39,16 @@ services:
       - ./themes/my-school:/var/www/html/themes/my-school:ro
       - ./scripts/initialize.sh:/docker-entrypoint.d/initialize.sh:ro
     networks:
+      - internal
       - web
+
   converter:
     build:
       context: ./icsToJson
-    network_mode: host
     environment:
-      #events 
       INTERVAL: 60
       FEEDS_FILE: /config/feeds.txt
       OUTPUT: /app/calendar-app/public/events.json
-      #images
       NC_DATA_ROOT: /ncdata
       IMAGE_SRC_TEMPLATE: "/ncdata/data/{slug}/files/Calendar"
       IMAGE_SRC_REI: /ncdata/data/rei/files/Calendar
@@ -63,11 +59,9 @@ services:
       - nextcloud_data:/ncdata:ro
       - ./calendar-app/public:/app/calendar-app/public
       - ./icsToJson/feeds.txt:/config/feeds.txt:ro
-    depends_on:
-      - nextcloud
+    depends_on: [nextcloud]
     restart: unless-stopped
-    networks:
-      - web
+    networks: [internal]
 
 volumes:
   db_data:
@@ -76,4 +70,6 @@ volumes:
 networks:
   web:
     external: true
+  internal:
+    driver: bridge
 
