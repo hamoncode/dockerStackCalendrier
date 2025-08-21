@@ -56,6 +56,7 @@ services:
       #images
       NC_DATA_ROOT: /ncdata
       IMAGE_SRC_TEMPLATE: "/ncdata/data/{slug}/files/Calendar"
+      IMAGE_SRC_REI: /ncdata/data/rei/files/Calendar
       IMAGE_OUT_DIR: /app/calendar-app/public/images
       IMAGE_INTERVAL: 300
       PYTHONUNBUFFERED: "1"
