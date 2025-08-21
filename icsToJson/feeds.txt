@@ -1,2 +1,2 @@
-REI=http://nextcloud/remote.php/dav/public-calendars/KyzCEYs7Ss8p3bAY?export
-
+ADMIN=http://nextcloud/remote.php/dav/public-calendars/akkfnxeXYD2wXHWQ?export
+TEST=https://nextcloud/remote.php/dav/calendars/admin/personal/
