@@ -6,8 +6,7 @@ services:
       - "8081:80"                 
     volumes:
       - ./calendar-app/public:/usr/share/nginx/html:ro
-      - /srv/calendar-images:/usr/share/nginx/html/images:ro
-    user: "33:33"    
+      - ${CAL_IMG_DIR}:/usr/share/nginx/html/images:ro
     restart: unless-stopped
     networks: [web]
 
