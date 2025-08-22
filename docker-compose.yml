@@ -6,6 +6,8 @@ services:
       - "8081:80"                 
     volumes:
       - ./calendar-app/public:/usr/share/nginx/html:ro
+      - /srv/calendar-images:/usr/share/nginx/html/images:ro
+    user: "33:33"    
     restart: unless-stopped
     networks: [web]
 
@@ -38,6 +40,7 @@ services:
       - nextcloud_data:/var/www/html
       - ./themes/my-school:/var/www/html/themes/my-school:ro
       - ./scripts/initialize.sh:/docker-entrypoint.d/initialize.sh:ro
+      - /srv/calendar-images:/mnt/calendar-images
     networks:
       - internal
       - web
@@ -49,14 +52,8 @@ services:
       INTERVAL: 60
       FEEDS_FILE: /config/feeds.txt
       OUTPUT: /app/calendar-app/public/events.json
-      NC_DATA_ROOT: /ncdata
-      IMAGE_SRC_TEMPLATE: "/ncdata/data/{slug}/files/Calendar"
-      IMAGE_SRC_REI: /ncdata/data/REI/files/Calendar
-      IMAGE_OUT_DIR: /app/calendar-app/public/images
-      IMAGE_INTERVAL: 300
       PYTHONUNBUFFERED: "1"
     volumes:
-      - nextcloud_data:/ncdata:ro
       - ./calendar-app/public:/app/calendar-app/public
       - ./icsToJson/feeds.txt:/config/feeds.txt:ro
     depends_on: [nextcloud]
