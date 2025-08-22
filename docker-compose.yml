@@ -39,7 +39,7 @@ services:
       - nextcloud_data:/var/www/html
       - ./themes/my-school:/var/www/html/themes/my-school:ro
       - ./scripts/initialize.sh:/docker-entrypoint.d/initialize.sh:ro
-      - /srv/calendar-images:/mnt/calendar-images
+      - ${CAL_IMG_DIR}:/mnt/calendar-images
     networks:
       - internal
       - web
