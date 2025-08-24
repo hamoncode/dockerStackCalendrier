@@ -31,7 +31,7 @@ services:
     depends_on:
       - db
     ports:
-      - "8081:80"
+      - "8080:80"
     environment:
       - MYSQL_HOST
       - MYSQL_DATABASE
