@@ -35,8 +35,8 @@ services:
     build:
       context: ./icsToJson
     environment:
-      GROUP_BY_SLUG: "0"            # flat folder (no /images/<slug>/…)
-      KEEP_ORIGINAL_NAMES: "1"      # keep filenames like rei.jpg
+      GROUP_BY_SLUG: "0"            
+      KEEP_ORIGINAL_NAMES: "1"      
       IMAGE_OVERWRITE: "1"          # overwrite if same filename
       #events 
       INTERVAL: 60                     
