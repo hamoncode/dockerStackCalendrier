@@ -16,7 +16,11 @@ PER_SLUG_PREFIX = "IMAGE_SRC_"
 
 OUT_DIR = Path(os.environ.get("IMAGE_OUT_DIR", "/app/calendar-app/public/images"))
 INTERVAL = int(os.environ.get("IMAGE_INTERVAL", "300"))
-GROUP_BY_SLUG = True  # set to False to flatten into /images
+
+KEEP_ORIGINAL_NAMES = os.environ.get("KEEP_ORIGINAL_NAMES", "1").lower() in ("1","true","yes")
+GROUP_BY_SLUG = os.environ.get("GROUP_BY_SLUG", "0").lower() in ("1","true","yes")
+OVERWRITE = os.environ.get("IMAGE_OVERWRITE", "1").lower() in ("1","true","yes")
+
 
 def parse_feed_file(path: str) -> dict[str, str]:
     feeds = {}
@@ -57,13 +61,29 @@ def copy_image(src: Path, out_base: Path, subfolder: str | None):
     if ext not in ALLOWED_EXT:
         return False, None
     try:
-        digest = hash_file(src)
-        name = f"{digest}_{src.name}"
+        # Decide target directory and name
         target_dir = out_base / (subfolder or "")
         target_dir.mkdir(parents=True, exist_ok=True)
+
+        if KEEP_ORIGINAL_NAMES:
+            name = src.name
+        else:
+            digest = hash_file(src)
+            name = f"{digest}_{src.name}"
+
         target = target_dir / name
-        if target.exists() and target.stat().st_size == src.stat().st_size:
-            return False, target
+
+        if target.exists():
+            if not OVERWRITE:
+                # keep existing; no change
+                return False, target
+            # Overwrite only if content differs
+            try:
+                if target.stat().st_size == src.stat().st_size and hash_file(target) == hash_file(src):
+                    return False, target  # identical
+            except Exception:
+                pass  # if hashing fails, fall through to copy
+
         shutil.copy2(src, target)
         return True, target
     except Exception as e:
