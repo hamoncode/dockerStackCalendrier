@@ -9,7 +9,7 @@ services:
     networks: [web]
 
   db:
-    image: mariadb:10.9
+    image: mariadb:10.11
     restart: unless-stopped
     env_file: .env
     environment:
@@ -29,15 +29,16 @@ services:
     ports: ["8080:80"]
     volumes:
       - nextcloud_data:/var/www/html
+      - ./vendor:/vendor:ro
     networks: [web]
 
   converter:
     build:
       context: ./icsToJson
     environment:
-      GROUP_BY_SLUG: "0"            # flat folder (no /images/<slug>/…)
-      KEEP_ORIGINAL_NAMES: "1"      # keep filenames like rei.jpg
-      IMAGE_OVERWRITE: "1"          # overwrite if same filename
+      GROUP_BY_SLUG: "0"
+      KEEP_ORIGINAL_NAMES: "1"
+      IMAGE_OVERWRITE: "1"          
       #events 
       INTERVAL: 60                     
       FEEDS_FILE: /config/feeds.txt    
@@ -49,9 +50,9 @@ services:
       IMAGE_OUT_DIR: /app/calendar-app/public/images
       IMAGE_INTERVAL: 300
     volumes:
-      - ./icsToJson/feeds.txt:/config/feeds.txt:ro         # ← provide feeds
-      - ./calendar-app/public:/app/calendar-app/public      # ← share events.json with nginx
-      - nextcloud_data:/ncdata:ro                           # ← read NC files for images
+      - ./icsToJson/feeds.txt:/config/feeds.txt:ro
+      - ./calendar-app/public:/app/calendar-app/public
+      - nextcloud_data:/ncdata:ro
     depends_on: [nextcloud]
     restart: unless-stopped
     networks: [web]
