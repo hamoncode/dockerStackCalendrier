@@ -8,8 +8,17 @@ services:
     restart: unless-stopped
     networks: [web]
 
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    command: --label-enable --cleanup --interval 86400
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  
   db:
     image: mariadb:10.11
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     restart: unless-stopped
     env_file: .env
     environment:
@@ -23,6 +32,8 @@ services:
 
   nextcloud:
     image: nextcloud:latest
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     restart: unless-stopped
     env_file: .env
     depends_on: [db]
@@ -57,6 +68,8 @@ services:
     depends_on: [nextcloud]
     restart: unless-stopped
     networks: [web]
+
+
 
 volumes:
   db_data:
