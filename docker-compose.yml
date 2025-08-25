@@ -48,15 +48,9 @@ services:
     build:
       context: ./icsToJson
     environment:
-<<<<<<< HEAD
-      GROUP_BY_SLUG: "0"            
-      KEEP_ORIGINAL_NAMES: "1"      
-      IMAGE_OVERWRITE: "1"          # overwrite if same filename
-=======
       GROUP_BY_SLUG: "0"
       KEEP_ORIGINAL_NAMES: "1"
       IMAGE_OVERWRITE: "1"          
->>>>>>> tests
       #events 
       INTERVAL: 60                     
       FEEDS_FILE: /config/feeds.txt    
