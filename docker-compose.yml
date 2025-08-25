@@ -28,27 +28,19 @@ services:
     depends_on: [db]
     ports: ["8080:80"]
     volumes:
-      - nextcloud_data:/var/www/html            # ← persist NC data (needed for images too)
-      # - ./themes/my-school:/var/www/html/themes/my-school:ro   # optional
-      # - ./scripts/initialize.sh:/docker-entrypoint.d/initialize.sh:ro
+      - nextcloud_data:/var/www/html
     networks: [web]
 
   converter:
     build:
       context: ./icsToJson
     environment:
-<<<<<<< HEAD
       GROUP_BY_SLUG: "0"            # flat folder (no /images/<slug>/…)
       KEEP_ORIGINAL_NAMES: "1"      # keep filenames like rei.jpg
       IMAGE_OVERWRITE: "1"          # overwrite if same filename
       #events 
       INTERVAL: 60                     
       FEEDS_FILE: /config/feeds.txt    
-=======
-      # events
-      INTERVAL: 60
-      FEEDS_FILE: /config/feeds.txt
->>>>>>> dcb1be2a92cb0cf7bde2d22b001d3e0c26c67082
       OUTPUT: /app/calendar-app/public/events.json
       PYTHONUNBUFFERED: "1"
       # images (optional but recommended)
