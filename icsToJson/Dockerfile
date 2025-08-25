@@ -3,23 +3,21 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # scripts & deps
-COPY requirements.txt convert_ics_to_json.py import_image.py ./
-
+COPY requirements.txt import_events.py import_image.py ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# config
+# config (these defaults are fine; compose overrides OUTPUT/IMAGES_DIR/etc)
 ENV INTERVAL=60 \
     IMAGE_INTERVAL=300 \
-    IMAGE_OUT_DIR=/out/images \
-    IMAGE_FEEDS_FILE=/config/image_feeds.txt
+    PYTHONUNBUFFERED=1
 
-# Ordrer matters: import image before importing events
+# Order matters: import images before generating events
 CMD ["bash","-lc", "\
   set -euo pipefail; \
   python import_image.py --once || true; \
   python import_events.py; \
   ( while true; do sleep \"$IMAGE_INTERVAL\"; python import_image.py || true; done ) & \
-  ( while true; do sleep \"$INTERVAL\"; python convert_ics_to_json.py || true; done ) & \
+  ( while true; do sleep \"$INTERVAL\"; python import_events.py || true; done ) & \
   wait \
 "]
 
