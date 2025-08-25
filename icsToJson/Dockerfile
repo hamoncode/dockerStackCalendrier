@@ -13,13 +13,13 @@ ENV INTERVAL=60 \
     IMAGE_OUT_DIR=/out/images \
     IMAGE_FEEDS_FILE=/config/image_feeds.txt
 
-# run both: ICS fast loop + Images slower loop
+# Ordrer matters: import image before importing events
 CMD ["bash","-lc", "\
   set -euo pipefail; \
-  python convert_ics_to_json.py; \
   python import_image.py --once || true; \
-  ( while true; do sleep \"$INTERVAL\"; python convert_ics_to_json.py || true; done ) & \
+  python import_events.py; \
   ( while true; do sleep \"$IMAGE_INTERVAL\"; python import_image.py || true; done ) & \
+  ( while true; do sleep \"$INTERVAL\"; python convert_ics_to_json.py || true; done ) & \
   wait \
 "]
 

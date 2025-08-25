@@ -6,6 +6,47 @@ from datetime import datetime
 from dateutil.tz import tzutc
 from urllib.parse import urlparse
 
+ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"}
+
+def _choose_default_image(slug: str, images_dir: Path) -> str | None:
+    """
+    Prefer a sane existing filename in images_dir when the ICS has no ATTACH:
+    1) DEFAULT_IMAGE_<SLUG> env, if that file exists
+    2) Exact slug filename: rei.jpg/png/webp/jpeg
+    3) Common banners: wallpaper.*, banner.*, hero.*, cover.*
+    4) If only one image exists in the folder, use it
+    Returns a relative URL like 'images/<name>' or None.
+    """
+    # 1) explicit mapping
+    envkey = f"DEFAULT_IMAGE_{slug.upper()}"
+    if os.environ.get(envkey):
+        name = os.environ[envkey]
+        p = images_dir / name
+        if p.exists():
+            return f"images/{name}"
+
+    # 2) exact slug.<ext>
+    for ext in (".jpg", ".png", ".webp", ".jpeg"):
+        cand = images_dir / f"{slug}{ext}"
+        if cand.exists():
+            return f"images/{cand.name}"
+
+    # 3) common banner names
+    for base in ("wallpaper", "banner", "hero", "cover"):
+        for ext in (".jpg", ".png", ".webp", ".jpeg"):
+            cand = images_dir / f"{base}{ext}"
+            if cand.exists():
+                return f"images/{cand.name}"
+
+    # 4) single image present
+    files = [p.name for p in images_dir.iterdir()
+             if p.is_file() and p.suffix.lower() in ALLOWED_EXT]
+    if len(files) == 1:
+        return f"images/{files[0]}"
+
+    return None
+
+
 def normalize(url: str | None) -> str | None:
     if not url:
         return None
@@ -185,17 +226,19 @@ def main():
 
             # Try to extract images from ATTACH and use the first one if any
             saved_imgs = save_event_attachments(vevent, images_dir, assoc)
+            
+            # image importer
             img_rel = None
             if saved_imgs:
-                # make path relative to public/ root (same as current hardcoded convention)
-                # assumes images_dir is under calendar-app/public/
-                # fall back to basename if not under public
                 try:
-                    # produce a relative like "images/foo.jpg"
                     rel = saved_imgs[0].relative_to(Path("calendar-app/public"))
                     img_rel = str(rel).replace("\\", "/")
                 except ValueError:
                     img_rel = f"images/{saved_imgs[0].name}"
+            else:
+                # No ATTACH in ICS → choose a real existing file
+                images_dir = Path(os.environ.get("IMAGES_DIR", "calendar-app/public/images"))
+                img_rel = _choose_default_image(assoc.lower(), images_dir)
 
             e = {
                 "id":     str(counter),
@@ -207,7 +250,7 @@ def main():
                     "association": assoc,
                     "description": str(vevent.get("description", "")),
                     "location":    str(vevent.get("location", "")),
-                    "image":       img_rel or f"images/{assoc.lower()}.jpg",
+                    "image":       img_rel or None,
                 }
             }
             if vevent.get("url"):
