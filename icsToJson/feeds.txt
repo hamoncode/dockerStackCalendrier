@@ -1,6 +1,1 @@
-<<<<<<< HEAD
-REI=http://nextcloud/remote.php/dav/public-calendars/KyzCEYs7Ss8p3bAY?export
-=======
-ADMIN=http://nextcloud/remote.php/dav/public-calendars/akkfnxeXYD2wXHWQ?export
-TEST=https://nextcloud/remote.php/dav/calendars/admin/personal/
->>>>>>> 6afa7d2ddf7ddced1aa1850d691b99e1e1bdadba
+rei=http://nextcloud/remote.php/dav/public-calendars/nfyCKwCaBYCtNeKP?export
