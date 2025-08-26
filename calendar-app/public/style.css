@@ -1,0 +1,53 @@
+body {
+	font-family: Arial, sans-serif;
+	margin: 1rem;
+}
+
+#filters {
+	margin-bottom: 1rem;
+}
+
+#filters label {
+	margin-right: 1em;
+}
+
+#calendar {
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+/* Backdrop */
+#detailBackdrop {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 900;
+}
+
+/* Modal */
+#detailModal {
+	display: none;
+	position: fixed;
+	top: 20%;
+	left: 50%;
+	transform: translateX(-50%);
+	background: #fff;
+	padding: 1rem;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+	z-index: 1000;
+	max-width: 400px;
+	width: 90%;
+}
+
+#detailModal img {
+	max-width: 100%;
+	margin-top: .5rem;
+}
+
+#detailModal button {
+	float: right;
+}
