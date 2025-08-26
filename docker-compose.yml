@@ -18,7 +18,7 @@ services:
   db:
     image: mariadb:10.11
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+      - com.centurylinklabs.watchtower.enable: "true"
     restart: unless-stopped
     env_file: .env
     environment:
@@ -33,16 +33,20 @@ services:
   nextcloud:
     image: nextcloud:31-apache
     labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+      com.centurylinklabs.watchtower.enable: "true"
     restart: unless-stopped
-    env_file: .env
-    depends_on: [db]
-    ports: ["8080:80"]
+    env_file:
+      - .env
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
     volumes:
       - nextcloud_data:/var/www/html
-      - ./vendor:/vendor:ro
-      - ./scripts/initialize.sh:/docker-entrypoint-init.d/initialize.sh:ro
-    networks: [web]
+      - "./vendor:/vendor:ro"
+      - "./scripts/initialize.sh:/docker-entrypoint-init.d/initialize.sh:ro"
+    networks:
+      - web
 
   converter:
     build:
