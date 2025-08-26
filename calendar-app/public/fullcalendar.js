@@ -5,6 +5,7 @@ function closeModal() {
 
 let eventsData = [];
 let assocColors = {};
+const LOCALE = 'fr-CA'; // french (Canada). Use 'fr-FR' if you prefer.
 
 document.addEventListener('DOMContentLoaded', () => {
   const filtersEl = document.getElementById('filters');
@@ -43,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cb.addEventListener('change', () => calendar.refetchEvents());
       });
 
-      // 3) Initialize FullCalendar (unchanged logic)
+      // 3) Initialize FullCalendar (unchanged logic; just localized UI)
       window.calendar = new FullCalendar.Calendar(calEl, {
         initialView: 'dayGridMonth',
         headerToolbar: {
@@ -51,6 +52,22 @@ document.addEventListener('DOMContentLoaded', () => {
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
+
+        // --- Localization additions ---
+        locale: 'fr',          // requires locales build for full month/day names
+        firstDay: 1,           // Monday start (common in FR)
+        buttonText: {          // fallback labels (work even without locales-all)
+          today: 'Aujourd’hui',
+          month: 'Mois',
+          week: 'Semaine',
+          day: 'Jour',
+          list: 'Liste'
+        },
+        weekText: 'Sem.',
+        allDayText: 'Toute la journée',
+        noEventsText: 'Aucun événement à afficher',
+        // ------------------------------
+
         eventSources: [{
           events: (info, success) => {
             const chosen = Array.from(filtersEl.querySelectorAll('input:checked'))
@@ -64,9 +81,20 @@ document.addEventListener('DOMContentLoaded', () => {
         eventClick: info => {
           const e = info.event;
           document.getElementById('modalTitle').innerText = e.title;
+
+          // French date formatting (same logic, just localized output)
+          const fmtDate = (d) => d?.toLocaleDateString(LOCALE, {
+            year: 'numeric', month: 'long', day: 'numeric'
+          });
+          const fmtDateTime = (d) => d?.toLocaleString(LOCALE, {
+            year: 'numeric', month: 'long', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+          });
+
           document.getElementById('modalDate').innerText = e.allDay
-            ? e.start.toLocaleDateString()
-            : `${e.start.toLocaleString()} → ${e.end ? e.end.toLocaleString() : ''}`;
+            ? fmtDate(e.start)
+            : `${fmtDateTime(e.start)} → ${e.end ? fmtDateTime(e.end) : ''}`;
+
           document.getElementById('modalLocation').innerText = e.extendedProps.location || '—';
           document.getElementById('modalDesc').innerText = e.extendedProps.description || '';
 
