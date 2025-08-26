@@ -46,7 +46,7 @@ services:
 
   converter:
     build:
-      context: ./icsToJson
+      context: ./converter
     environment:
       GROUP_BY_SLUG: "0"
       KEEP_ORIGINAL_NAMES: "1"
@@ -62,7 +62,7 @@ services:
       IMAGE_OUT_DIR: /app/calendar-app/public/images
       IMAGE_INTERVAL: 300
     volumes:
-      - ./icsToJson/feeds.txt:/config/feeds.txt:ro
+      - ./converter/feeds.txt:/config/feeds.txt:ro
       - ./calendar-app/public:/app/calendar-app/public
       - nextcloud_data:/ncdata:ro
     depends_on: [nextcloud]
