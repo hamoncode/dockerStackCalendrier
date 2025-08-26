@@ -21,7 +21,6 @@ KEEP_ORIGINAL_NAMES = os.environ.get("KEEP_ORIGINAL_NAMES", "1").lower() in ("1"
 GROUP_BY_SLUG = os.environ.get("GROUP_BY_SLUG", "0").lower() in ("1","true","yes")
 OVERWRITE = os.environ.get("IMAGE_OVERWRITE", "1").lower() in ("1","true","yes")
 
-
 def parse_feed_file(path: str) -> dict[str, str]:
     feeds = {}
     p = Path(path)

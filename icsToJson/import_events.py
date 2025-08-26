@@ -236,9 +236,8 @@ def main():
                 except ValueError:
                     img_rel = f"images/{saved_imgs[0].name}"
             else:
-                # No ATTACH in ICS → choose a real existing file
-                images_dir = Path(os.environ.get("IMAGES_DIR", "calendar-app/public/images"))
-                img_rel = _choose_default_image(assoc.lower(), images_dir)
+                # No ATTACH in ICS → choose nothing
+                img_rel = None
 
             e = {
                 "id":     str(counter),
