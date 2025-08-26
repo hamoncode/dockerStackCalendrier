@@ -8,6 +8,32 @@ from urllib.parse import urlparse
 
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"}
 
+def _image_from_categories(vevent, images_dir: Path) -> str | None:
+    try:
+        cats = vevent.get("categories")
+        if not cats:
+            return None
+        # icalendar may store categories as list-like or a single value
+        values = []
+        if hasattr(cats, "cats"):
+            values = [str(x) for x in cats.cats]
+        else:
+            values = [str(cats)]
+        for raw in values:
+            s = raw.strip()
+            low = s.lower()
+            # 1) explicit form: image=<filename>
+            if low.startswith("image=") or low.startswith("img="):
+                name = s.split("=", 1)[1].strip()
+                if (images_dir / name).exists():
+                    return f"images/{name}"
+            # 2) convenience: category equals an existing filename
+            if (images_dir / s).exists():
+                return f"images/{s}"
+    except Exception:
+        pass
+    return None
+
 def _choose_default_image(slug: str, images_dir: Path) -> str | None:
     """
     Prefer a sane existing filename in images_dir when the ICS has no ATTACH:
@@ -224,10 +250,10 @@ def main():
             dtstart = vevent.get("dtstart").dt
             dtend   = vevent.get("dtend").dt if vevent.get("dtend") else None
 
-            # Try to extract images from ATTACH and use the first one if any
+            desc = str(vevent.get("description", ""))  # keep if you also use desc rules later
+
             saved_imgs = save_event_attachments(vevent, images_dir, assoc)
-            
-            # image importer
+
             img_rel = None
             if saved_imgs:
                 try:
@@ -236,8 +262,9 @@ def main():
                 except ValueError:
                     img_rel = f"images/{saved_imgs[0].name}"
             else:
-                # No ATTACH in ICS → choose nothing
-                img_rel = None
+                # use category directive instead of a global default
+                img_rel = _image_from_categories(vevent, images_dir)
+
 
             e = {
                 "id":     str(counter),
