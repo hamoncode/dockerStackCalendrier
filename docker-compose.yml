@@ -31,7 +31,7 @@ services:
     networks: [web]
 
   nextcloud:
-    image: nextcloud:latest
+    image: nextcloud:31-apache
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
     restart: unless-stopped
@@ -68,8 +68,6 @@ services:
     depends_on: [nextcloud]
     restart: unless-stopped
     networks: [web]
-
-
 
 volumes:
   db_data:
