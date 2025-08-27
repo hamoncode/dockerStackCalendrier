@@ -151,7 +151,7 @@ docker-compose restart converter
 ![Étape 2](Readme_screenshots/ajoutevent2.png)
 ![Étape 3](Readme_screenshots/ajoutevent3.png)
 
-**Très important** : on doit peser sur enter après avoir entrer le nom de l'image dans les tags pour que l'image soit bien prise en compte
+**Très important** : on doit peser sur entrer après avoir entrer le nom de l'image dans les tags pour que l'image soit bien prise en compte
 
 6. **sauvegarder** l'événement
 
