@@ -18,7 +18,7 @@ services:
   db:
     image: mariadb:10.11
     labels:
-      - com.centurylinklabs.watchtower.enable: "true"
+      - "com.centurylinklabs.watchtower.enable: true"
     restart: unless-stopped
     env_file: .env
     environment:
@@ -33,7 +33,7 @@ services:
   nextcloud:
     image: nextcloud:31-apache
     labels:
-      com.centurylinklabs.watchtower.enable: "true"
+      - "com.centurylinklabs.watchtower.enable: true"
     restart: unless-stopped
     env_file:
       - .env
@@ -80,4 +80,3 @@ volumes:
 networks:
   web:
     external: true
-
