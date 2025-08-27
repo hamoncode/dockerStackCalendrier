@@ -105,9 +105,32 @@ port 8081 --> http://localhost:8081 (Calendrier des Assos)
 ```
   - répondre aux questions posées dans le cli
 
-2. aller chercher le ics plublic de l'utilisateur dans nextcloud
+2. aller chercher le ics plublic de l'utilisateur dans nextcloud(voir screenshots comment aller chercher dans GUI)
 
 ![Étape 1 – création](Readme_screenshots/nexctcloudadduser1.png)
 ![Étape 2 – droits](Readme_screenshots/nextcloudadduser2.png)
 ![Étape 3 – confirmation](Readme_screenshots/nextcloudadduser3.png)
+
+3. ajouter le lien ics dans le fichier feeds.txt
+
+```bash
+nano ./converter/feeds.txt
+```
+- declarer le nom de votre asso = ajouter le lien ics copié dans nextcloud 
+changer le domaine pour le volume partagé docker (nextcloud dans notre cas)
+
+exemple: 
+
+rei=https://**ubuntu:8080**/remote.php/dav/calendars/asso/calendarname/calendar.ics
+
+devient 
+
+rei=http://**nextcloud**/remote.php/dav/calendars/asso/calendarname/calendar.ics
+
+4. relancer le container converter pour prendre en compte le nouveau feed
+
+```bash
+docker-compose restart converter
+```
+
 
