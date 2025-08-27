@@ -21,7 +21,7 @@ Nous avons réutilisé plusieurs projets open-source pour construire notre solut
 
 ---
 
-## Comment le stack fonctionne
+## Architecture du système
 
 
 ```mermaid
