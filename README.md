@@ -2,38 +2,47 @@
 
 ## Prérequis
 
-* **Docker** (>=20.10) et **Docker Compose** installés sur votre machine.
-* Un réseau Docker nommé `calnet` (ou tout autre nom de votre choix).
-* Tous les fichiers en place :
-* `docker-compose.yml` (services principaux)
-* `.env` configuré
-* `themes/my-school/`
-* `scripts/initialize.sh`
+**Docker** (>=20.10) et **Docker Compose** installés sur votre machine.
 
 ---
 
-## workflow du script de convertions ics vers json
+## Comment déployer le stack
 
+1. Cloner ce dépôt Git :
 
-```mermaid
-flowchart TD
-  A[Start] --> B[Load .env & FEEDS mapping]
-  B --> C[Init events list & counter]
-  C --> D{Have more feeds?}
-  D -->|Yes| E[Fetch ICS URL for current association]
-  E --> F[Parse ICS into Calendar object]
-  F --> G{More VEVENTs?}
-  G -->|Yes| H[Extract dtstart, dtend, summary, description, location, url]
-  H --> I[Normalize dates → ISO strings]
-  I --> J[Build JSON event dict]
-  J --> K[Append event to list & increment counter]
-  K --> G
-  G -->|No| D
-  D -->|No| L[Write `events.json` to disk]
-  L --> M[Sleep 30 minutes]
-  M --> C
+```bash
+
+git clone https\://github.com/votre-utilisateur/votre-repo.git
+
+cd dockerStackCalendrier
 
 ```
+
+2. Créer et éditer le fichier `.env` en vous basant sur `.env.example` :
+
+```bash
+
+cp .env.example .env
+
+# Éditez `.env` avec vos valeurs (ex. `NEXTCLOUD_HOST`, `DB_PASSWORD`, etc.)
+
+nano .env
+
+```
+
+3. Partir le stack avec Docker Compose 
+
+```bash
+
+docker-compose up -d --build
+
+```
+
+4. Accéder à l'interface web de Nextcloud pour finaliser l'installation.
+
+example: 
+port 8080 --> http://localhost:8080 (nextcloud)
+port 8081 --> http://localhost:8081 (Calendrier des Assos)
 
 ---
 
