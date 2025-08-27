@@ -54,7 +54,7 @@ flowchart TD
 
 ```bash
 
-git clone https\://github.com/votre-utilisateur/votre-repo.git
+git clone https://github.com/hamoncode/dockerStackCalendrier.git
 
 cd dockerStackCalendrier
 
