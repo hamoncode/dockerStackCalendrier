@@ -133,4 +133,28 @@ rei=http://**nextcloud**/remote.php/dav/calendars/asso/calendarname/calendar.ics
 docker-compose restart converter
 ```
 
+5. demander a l'association de changer son mot de passe temporaire nextcloud pour un mot de passe robuste 
 
+## Comment l'association ajoute un événement **et y attacher une image (ou un gif!)**
+
+1. L'association se connecte à Nextcloud avec son compte utilisateur
+
+2. Aller dans l'application "Calendrier" (Calendar)
+
+3. Créer un nouvel événement en cliquant sur le bouton "+" (Ajouter)
+
+4. Remplir les détails de l'événement (titre, date, description, etc.)
+
+5.**pour ajouter une image** : 
+    
+![Étape 1 ](Readme_screenshots/ajoutevent1.png)
+![Étape 2 ](Readme_screenshots/ajoutevent2.png)
+![Étape 3 ](Readme_screenshots/ajoutevent3.png)
+
+6. **sauvegarder** l'événement
+
+7. Attendre que le script de conversion (converter) s'exécute (toutes les 1 minute)
+
+8. Vérifier que l'événement apparaît sur le calendrier public (port 8081)
+
+![Resultat](Readme_screenshots/resultat.png)
