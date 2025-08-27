@@ -8,6 +8,14 @@ services:
     restart: unless-stopped
     networks: [web]
 
+  imgworker:
+    build: ./imgworker
+    restart: unless-stopped
+    volumes:
+      - ./calendar-app/public/images:/mnt/images
+    depends_on:
+      - converter
+
   watchtower:
     image: containrrr/watchtower
     restart: unless-stopped

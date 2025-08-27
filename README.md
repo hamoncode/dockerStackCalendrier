@@ -1,109 +1,165 @@
-# Installation du serveur docker
+# Le calendrier centralisé des Associations Universitaires
+
+Solution de déploiement pour gérer des calendriers partagés entre plusieurs associations universitaires et diffuser les événements publiquement tout au même endroit.
+
+## Résumé de notre solution
+
+- Le problème qui était à résoudre : plusieurs associations universitaires publieent leurs événements sur des calendriers séparés (Google Calendar, iCal, etc.) et il est difficile pour les étudiants de les retrouver.
+
+- Notre solution : un stack Docker qui agrège ces calendriers dans une interface web unique et publique, avec une gestion simple des utilisateurs et des droits d'accès.
+
+### réeutilisation des projets open-source
+Nous avons réutilisé plusieurs projets open-source pour construire notre solution afin de maximiser la robustesse et minimiser le temps de développement :
+
+- [Nextcloud](https://nextcloud.com/) pour la création des évênements par les associations
+- [FullCalendar](https://fullcalendar.io/) pour l'affichage du calendrier sur le site public
+- plusieurs autres packages python pour la conversion des formats de calendrier (ICS vers JSON)
 
 ## Prérequis
 
-* **Docker** (>=20.10) et **Docker Compose** installés sur votre machine.
-* Un **Cloudflare Tunnel** configuré (ID du tunnel + fichier de crédentiels JSON + token).
-* Un enregistrement DNS CNAME ou A pointant votre sous-domaine (ex. `calendar.school.edu`) vers le Tunnel Cloudflare.
-* Un réseau Docker nommé `calnet` (ou tout autre nom de votre choix).
-* Tous les fichiers en place :
-* `docker-compose.yml` (services principaux)
-* `.env` configuré
-* `cloudflared/config.yml` et `cloudflared/cred-<tunnel-id>.json`
-* `themes/my-school/`
-* `scripts/initialize.sh`
+**Docker** (>=20.10) et **Docker Compose** installés
 
 ---
 
-## workflow du script de convertions ics vers json
+## Architecture du système
 
 
 ```mermaid
 flowchart TD
-  A[Start] --> B[Load .env & FEEDS mapping]
-  B --> C[Init events list & counter]
-  C --> D{Have more feeds?}
-  D -->|Yes| E[Fetch ICS URL for current association]
-  E --> F[Parse ICS into Calendar object]
-  F --> G{More VEVENTs?}
-  G -->|Yes| H[Extract dtstart, dtend, summary, description, location, url]
-  H --> I[Normalize dates → ISO strings]
-  I --> J[Build JSON event dict]
-  J --> K[Append event to list & increment counter]
-  K --> G
-  G -->|No| D
-  D -->|No| L[Write `events.json` to disk]
-  L --> M[Sleep 30 minutes]
-  M --> C
+  U[Utilisateurs] -->|HTTP 8081| CAL[calendar nginx]
+  CAL --> EVENTS[(events.json)]
+  CAL --> IMGS[(images folder)]
+
+  FEEDS[(feeds.txt)] -. RO .-> CV[converter ICS->JSON + images]
+  CV -->|ecrit| EVENTS
+  CV -->|copie| IMGS
+
+  ADM[Admins/Associations] -->|HTTP 8080| NC[nextcloud 31]
+  NC <--> DB[(mariadb 10.11)]
+  NC --- NCD[(volume nextcloud_data)]
+  NCD -. RO vers converter .-> CV
+
+  IMGW[imgworker] -->|optimise| IMGS
+
+  WT[watchtower] -. met a jour .-> NC
+  WT -. met a jour .-> DB
 
 ```
+
+
+
+## Comment déployer le stack
+
+1. Cloner ce dépôt Git :
+
+```bash
+
+git clone https://github.com/hamoncode/dockerStackCalendrier.git
+
+cd dockerStackCalendrier
+
+```
+
+2. Créer et éditer le fichier `.env` en vous basant sur `.env.example` :
+
+```bash
+
+cp .env.example .env
+
+# Éditez `.env` avec vos valeurs (ex. `NEXTCLOUD_HOST`, `DB_PASSWORD`, etc.)
+
+nano .env
+
+```
+
+3. créer réseaux docker web
+
+```bash
+docker network create web || true
+
+```
+
+4. Partir le stack avec Docker Compose 
+
+```bash
+
+docker-compose up -d --build
+
+```
+
+4. Accéder à l'interface web de Nextcloud pour finaliser l'installation.
+
+example: 
+port 8080 --> http://localhost:8080 (nextcloud)
+port 8081 --> http://localhost:8081 (Calendrier des Assos)
 
 ---
 
+## comment ajouter un association en tant qu'utilisateur nextcloud
 
-## 1. importer les secrets dans `.env`
-
-```bash
-cp .env.secret .env
-```
-
-## 2. Rendre le script d’initialisation exécutable
+1. lancer script d'automatisation nc_add_calendar_user.sh
 
 ```bash
-chmod +x scripts/initialize.sh
-```
+./nc_add_calendar_user.sh
 
-## 3. Lancer le stack
+```
+  - répondre aux questions posées dans le cli
+
+2. se connecter avec le compte et aller chercher le ics plublic de l'utilisateur dans nextcloud(voir screenshots comment aller chercher dans GUI)
+
+![Étape 1 – création](Readme_screenshots/nexctcloudadduser1.png)
+![Étape 2 – droits](Readme_screenshots/nextcloudadduser2.png)
+![Étape 3 – confirmation](Readme_screenshots/nextcloudadduser3.png)
+
+3. ajouter le lien ics dans le fichier feeds.txt
 
 ```bash
-# démarre la base de données, Nextcloud et le Tunnel Cloudflare
-docker-compose up -d
+nano ./converter/feeds.txt
 ```
+- declarer le nom de votre asso = ajouter le lien ics copié dans nextcloud 
+changer le domaine pour le volume partagé docker (nextcloud dans notre cas)
 
-## 4. Finaliser l’installation via l’interface Web
+exemple: 
 
-1. Ouvrez votre navigateur sur **https\://`${NEXTCLOUD_HOST}`**.
-2. Créez l’utilisateur **admin** et son mot de passe.
-3. Les informations de la base de données sont pré-remplies depuis `.env`.
-4. Terminez l’assistant d’installation.
+rei=https://**ubuntu:8080**/remote.php/dav/calendars/asso/calendarname/calendar.ics
 
-> Dès le démarrage, `scripts/initialize.sh` s’exécute automatiquement pour :
->
-> * activer uniquement l’application **Calendrier**,
-> * désactiver les apps inutiles,
-> * créer le groupe `calendar-creators` et ses utilisateurs,
-> * partager le calendrier en lecture publique et avec droits d’édition pour le groupe.
+devient 
 
-## 5. Configurer le tunnel Cloudflare (ou le port forwarding au choix)
+rei=http://**nextcloud**/remote.php/dav/calendars/asso/calendarname/calendar.ics
 
-pour tester l'application on la host sur un serveur proxmox avec un tunnel Cloudflare. 
-
-## 6. Étapes post-installation
+4. relancer le container converter pour prendre en compte le nouveau feed
 
 ```bash
-# réparer la configuration et vider le cache
-docker-compose exec nextcloud occ maintenance:repair
-# optionnel : nettoyer le cache des fichiers
-docker-compose exec nextcloud occ files:cleanup
+docker-compose restart converter
 ```
 
-## steps d'installation docker-compose
+5. demander a l'association de changer son mot de passe temporaire nextcloud pour un mot de passe robuste 
 
-```bash
-# créer le réseau Docker si nécessaire
-docker network create web || true
+## Comment l'association ajoute un événement **et y attacher une image (ou un gif!)**
 
-# lancer le stack
+1. L'association se connecte à Nextcloud avec son compte utilisateur
 
-docker-compose up -d
+2. Aller dans l'application "Calendrier" (Calendar)
 
-# vérifier que tout est en ordre
-docker-compose ps
+3. Créer un nouvel événement en cliquant sur le bouton "+" (Ajouter)
 
-# vérifier les logs
+4. Remplir les détails de l'événement (titre, date, description, etc.)
 
-docker-compose logs -f
+5.**pour ajouter une image** : 
+    
+![Étape 1](Readme_screenshots/ajoutevent1.png)
+![Étape 2](Readme_screenshots/ajoutevent2.png)
+![Étape 3](Readme_screenshots/ajoutevent3.png)
 
-# pour arrêter le stack
-docker-compose down
-```
+**Très important** : on doit peser sur entrer après avoir entrer le nom de l'image dans les tags pour que l'image soit bien prise en compte
+
+6. **sauvegarder** l'événement
+
+![Étape 4](Readme_screenshots/ajoutevent4.png)
+
+
+7. Attendre que le script de conversion (converter) s'exécute (toutes les 1 minute)
+
+8. Vérifier que l'événement apparaît sur le calendrier public (port 8081)
+
+![Resultat](Readme_screenshots/resultat.png)
