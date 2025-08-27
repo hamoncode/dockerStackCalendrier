@@ -34,7 +34,7 @@ flowchart TD
   CV -->|ecrit| EVENTS
   CV -->|copie| IMGS
 
-  ADM[Admins/Users] -->|HTTP 8080| NC[nextcloud 31]
+  ADM[Admins/Associations] -->|HTTP 8080| NC[nextcloud 31]
   NC <--> DB[(mariadb 10.11)]
   NC --- NCD[(volume nextcloud_data)]
   NCD -. RO vers converter .-> CV
