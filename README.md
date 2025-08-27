@@ -95,4 +95,19 @@ port 8081 --> http://localhost:8081 (Calendrier des Assos)
 
 ---
 
+## comment ajouter un association en tant qu'utilisateur nextcloud
+
+1. lancer script d'automatisation nc_add_calendar_user.sh
+
+```bash
+./nc_add_calendar_user.sh
+
+```
+  - répondre aux questions posées dans le cli
+
+2. aller chercher le ics plublic de l'utilisateur dans nextcloud
+
+![Étape 1 – création](Readme_screenshots/nexctcloudadduser1.png)
+![Étape 2 – droits](Readme_screenshots/nextcloudadduser2.png)
+![Étape 3 – confirmation](Readme_screenshots/nextcloudadduser3.png)
 
