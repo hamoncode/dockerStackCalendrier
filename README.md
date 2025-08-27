@@ -12,7 +12,7 @@ Solution de déploiement pour gérer des calendriers partagés entre plusieurs a
 Nous avons réutilisé plusieurs projets open-source pour construire notre solution afin de maximiser la robustesse et minimiser le temps de développement :
 
 - [Nextcloud](https://nextcloud.com/) pour la création des évênements par les associations
-- [FullCalendar](https://fullcalendar.io/) pour l'affichage des calendriers
+- [FullCalendar](https://fullcalendar.io/) pour l'affichage du calendrier sur le site public
 - plusieurs autres packages python pour la conversion des formats de calendrier (ICS vers JSON)
 
 ## Prérequis
