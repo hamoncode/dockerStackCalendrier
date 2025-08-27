@@ -2,6 +2,19 @@
 
 Solution de déploiement pour gérer des calendriers partagés entre plusieurs associations universitaires et diffuser les événements publiquement tout au même endroit.
 
+## Résumé de notre solution
+
+- Le problème qui était à résoudre : plusieurs associations universitaires publieent leurs événements sur des calendriers séparés (Google Calendar, iCal, etc.) et il est difficile pour les étudiants de les retrouver.
+
+- Notre solution : un stack Docker qui agrège ces calendriers dans une interface web unique et publique, avec une gestion simple des utilisateurs et des droits d'accès.
+
+### réeutilisation des projets open-source
+Nous avons réutilisé plusieurs projets open-source pour construire notre solution afin de maximiser la robustesse et minimiser le temps de développement :
+
+- [Nextcloud](https://nextcloud.com/) pour la gestion des utilisateurs et l'interface d'administration
+- [FullCalendar](https://fullcalendar.io/) pour l'affichage des calendriers
+- plusieurs autres packages python pour la conversion des formats de calendrier (ICS vers JSON)
+
 ## Prérequis
 
 **Docker** (>=20.10) et **Docker Compose** installés
@@ -32,6 +45,8 @@ flowchart TD
   WT -. met a jour .-> DB
 
 ```
+
+
 
 ## Comment déployer le stack
 
