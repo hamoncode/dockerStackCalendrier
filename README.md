@@ -105,7 +105,7 @@ port 8081 --> http://localhost:8081 (Calendrier des Assos)
 ```
   - répondre aux questions posées dans le cli
 
-2. aller chercher le ics plublic de l'utilisateur dans nextcloud(voir screenshots comment aller chercher dans GUI)
+2. se connecter avec le compte et aller chercher le ics plublic de l'utilisateur dans nextcloud(voir screenshots comment aller chercher dans GUI)
 
 ![Étape 1 – création](Readme_screenshots/nexctcloudadduser1.png)
 ![Étape 2 – droits](Readme_screenshots/nextcloudadduser2.png)
