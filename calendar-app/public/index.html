@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr-CA">
 
 <head>
 	<meta charset="UTF-8" />
-	<title>Public Calendar</title>
+	<title>Calendrier public</title>
 
-	<!-- FullCalendar (same versions as before) -->
-	<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.css" rel="stylesheet" />
-	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js"></script>
+<link rel="stylesheet" href="./vendor/fullcalendar/index.global.min.css">
+<script src="./vendor/fullcalendar/index.global.min.js"></script>
+<script src="./vendor/fullcalendar/locales-all.global.min.js"></script>
+<script src="./fullcalendar.js?v=1" defer></script>
 
 	<!-- Your styles -->
 	<link rel="stylesheet" href="./style.css" />
@@ -15,22 +16,22 @@
 
 <body>
 
-	<div id="filters">Loading filters…</div>
+	<div id="filters">Chargement des filtres…</div>
 	<div id="calendar"></div>
 
 	<!-- Backdrop & Modal -->
 	<div id="detailBackdrop" onclick="closeModal()"></div>
-	<div id="detailModal">
-		<button onclick="closeModal()">×</button>
+	<div id="detailModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+		<button onclick="closeModal()" aria-label="Fermer">×</button>
 		<h2 id="modalTitle"></h2>
-		<p><strong>Date:</strong> <span id="modalDate"></span></p>
-		<p><strong>Location:</strong> <span id="modalLocation"></span></p>
+		<p><strong>Date&nbsp;:</strong> <span id="modalDate"></span></p>
+		<p><strong>Lieu&nbsp;:</strong> <span id="modalLocation"></span></p>
 		<img id="modalImage" src="" alt="" style="display:none;">
 		<p id="modalDesc"></p>
-		<p><a id="modalLink" href="#" target="_blank" style="display:none;">More info →</a></p>
+		<p><a id="modalLink" href="#" target="_blank" style="display:none;">Plus d’infos →</a></p>
 	</div>
 
-	<!-- Your app logic -->
+	<!-- Your app logic (kept the same) -->
 	<script src="./fullcalendar.js" defer></script>
 </body>
 
