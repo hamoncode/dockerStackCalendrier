@@ -8,6 +8,48 @@ Solution pour gérer des calendriers partagés entre plusieurs associations univ
 
 ---
 
+## Comment le stack fonctionne
+
+
+```mermaid
+flowchart TD
+    %% --- Frontend public ---
+    U[(Utilisateurs)] -->|"HTTP :8081"| CAL[calendar (nginx)\nsert ./calendar-app/public]
+    CAL -->|"sert"| EVENTS[(events.json)]
+    CAL -->|"sert"| IMGS[(images/)]
+
+    %% --- Génération événements & images ---
+    CV[converter\nICS → JSON + import d'images\nINTERVAL=60s] -->|"écrit"| EVENTS
+    CV -->|"dépose / met à jour"| IMGS
+    FEEDS[(feeds.txt\nURLs ICS publics)] -. "monté RO" .-> CV
+
+    %% --- Nextcloud (sources fichiers & images) ---
+    A2[[Admins/Users]] -->|"HTTP :8080"| NC[nextcloud:31-apache]
+    NC <--> DB[(mariadb:10.11)]
+    NC --- NCD[(volume nextcloud_data)]
+    NCD -. "monté RO" .-> CV
+    note right of NCD
+      Images attendues dans :
+      /ncdata/data/{slug}/files/Calendar
+    end
+
+    %% --- Optimisation d'images ---
+    IMGW[imgworker\nsurveille /mnt/images] -->|"optimise"| IMGS
+
+    %% --- Mises à jour automatisées ---
+    WT[watchtower\n--label-enable] -. "met à jour" .-> NC
+    WT -. "met à jour" .-> DB
+    note right of WT
+      Surveille seulement les conteneurs
+      avec le label watchtower.enable=true
+    end
+
+    %% Styles pour repérer rapidement les volumes/fichiers
+    classDef vol fill:#eef,stroke:#88a,stroke-width:1px;
+    class EVENTS,IMGS,NCD,FEEDS vol;
+
+```
+
 ## Comment déployer le stack
 
 1. Cloner ce dépôt Git :
