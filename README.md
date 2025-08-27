@@ -3,13 +3,10 @@
 ## Prérequis
 
 * **Docker** (>=20.10) et **Docker Compose** installés sur votre machine.
-* Un **Cloudflare Tunnel** configuré (ID du tunnel + fichier de crédentiels JSON + token).
-* Un enregistrement DNS CNAME ou A pointant votre sous-domaine (ex. `calendar.school.edu`) vers le Tunnel Cloudflare.
 * Un réseau Docker nommé `calnet` (ou tout autre nom de votre choix).
 * Tous les fichiers en place :
 * `docker-compose.yml` (services principaux)
 * `.env` configuré
-* `cloudflared/config.yml` et `cloudflared/cred-<tunnel-id>.json`
 * `themes/my-school/`
 * `scripts/initialize.sh`
 
