@@ -1,6 +1,6 @@
 # Le calendrier centralisé des Associations Universitaires
 
-Solution pour gérer des calendriers partagés entre plusieurs associations universitaires et diffuser les événements publiquement tout au même endroit.
+Solution de déploiement pour gérer des calendriers partagés entre plusieurs associations universitaires et diffuser les événements publiquement tout au même endroit.
 
 ## Prérequis
 
@@ -13,51 +13,23 @@ Solution pour gérer des calendriers partagés entre plusieurs associations univ
 
 ```mermaid
 flowchart TD
-  %% --- Frontend public ---
-  subgraph Public
-    U[Utilisateurs]
-    CAL[calendar (nginx)<br/>sert ./calendar-app/public]
-    U -->|HTTP 8081| CAL
-    EVENTS[(events.json)]
-    IMGS[(images/)]
-    CAL -->|sert| EVENTS
-    CAL -->|sert| IMGS
-  end
+  U[Utilisateurs] -->|HTTP 8081| CAL[calendar nginx]
+  CAL --> EVENTS[(events.json)]
+  CAL --> IMGS[(images folder)]
 
-  %% --- Génération événements & images ---
-  subgraph Données["Génération des données"]
-    CV[converter<br/>ICS -> JSON & images<br/>INTERVAL=60s]
-    FEEDS[(feeds.txt<br/>URLs ICS publics)]
-    FEEDS -. RO .-> CV
-    CV -->|écrit| EVENTS
-    CV -->|copie| IMGS
-  end
+  FEEDS[(feeds.txt)] -. RO .-> CV[converter ICS->JSON + images]
+  CV -->|ecrit| EVENTS
+  CV -->|copie| IMGS
 
-  %% --- Nextcloud (sources fichiers & images) ---
-  subgraph Nextcloud
-    A2[Admins/Users]
-    NC[nextcloud:31-apache]
-    DB[(mariadb:10.11)]
-    NCD[(volume nextcloud_data)]
-    A2 -->|HTTP 8080| NC
-    NC <--> DB
-    NCD -. RO pour converter .-> CV
-  end
+  ADM[Admins/Users] -->|HTTP 8080| NC[nextcloud 31]
+  NC <--> DB[(mariadb 10.11)]
+  NC --- NCD[(volume nextcloud_data)]
+  NCD -. RO vers converter .-> CV
 
-  %% --- Optimisation d'images ---
-  subgraph Images
-    IMGW[imgworker<br/>surveille /mnt/images<br/>optimise]
-    IMGW --> IMGS
-  end
+  IMGW[imgworker] -->|optimise| IMGS
 
-  %% --- Mises à jour automatisées ---
-  WT[watchtower<br/>--label-enable]
-  WT -. met à jour .-> NC
-  WT -. met à jour .-> DB
-
-  %% Styles
-  classDef vol fill:#eef,stroke:#88a,stroke-width:1px;
-  class EVENTS,IMGS,NCD,FEEDS vol;
+  WT[watchtower] -. met a jour .-> NC
+  WT -. met a jour .-> DB
 
 ```
 
