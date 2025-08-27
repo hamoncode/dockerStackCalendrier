@@ -13,40 +13,51 @@ Solution pour gérer des calendriers partagés entre plusieurs associations univ
 
 ```mermaid
 flowchart TD
-    %% --- Frontend public ---
-    U[(Utilisateurs)] -->|"HTTP :8081"| CAL[calendar (nginx)\nsert ./calendar-app/public]
-    CAL -->|"sert"| EVENTS[(events.json)]
-    CAL -->|"sert"| IMGS[(images/)]
+  %% --- Frontend public ---
+  subgraph Public
+    U[Utilisateurs]
+    CAL[calendar (nginx)<br/>sert ./calendar-app/public]
+    U -->|HTTP 8081| CAL
+    EVENTS[(events.json)]
+    IMGS[(images/)]
+    CAL -->|sert| EVENTS
+    CAL -->|sert| IMGS
+  end
 
-    %% --- Génération événements & images ---
-    CV[converter\nICS → JSON + import d'images\nINTERVAL=60s] -->|"écrit"| EVENTS
-    CV -->|"dépose / met à jour"| IMGS
-    FEEDS[(feeds.txt\nURLs ICS publics)] -. "monté RO" .-> CV
+  %% --- Génération événements & images ---
+  subgraph Données["Génération des données"]
+    CV[converter<br/>ICS -> JSON & images<br/>INTERVAL=60s]
+    FEEDS[(feeds.txt<br/>URLs ICS publics)]
+    FEEDS -. RO .-> CV
+    CV -->|écrit| EVENTS
+    CV -->|copie| IMGS
+  end
 
-    %% --- Nextcloud (sources fichiers & images) ---
-    A2[[Admins/Users]] -->|"HTTP :8080"| NC[nextcloud:31-apache]
-    NC <--> DB[(mariadb:10.11)]
-    NC --- NCD[(volume nextcloud_data)]
-    NCD -. "monté RO" .-> CV
-    note right of NCD
-      Images attendues dans :
-      /ncdata/data/{slug}/files/Calendar
-    end
+  %% --- Nextcloud (sources fichiers & images) ---
+  subgraph Nextcloud
+    A2[Admins/Users]
+    NC[nextcloud:31-apache]
+    DB[(mariadb:10.11)]
+    NCD[(volume nextcloud_data)]
+    A2 -->|HTTP 8080| NC
+    NC <--> DB
+    NCD -. RO pour converter .-> CV
+  end
 
-    %% --- Optimisation d'images ---
-    IMGW[imgworker\nsurveille /mnt/images] -->|"optimise"| IMGS
+  %% --- Optimisation d'images ---
+  subgraph Images
+    IMGW[imgworker<br/>surveille /mnt/images<br/>optimise]
+    IMGW --> IMGS
+  end
 
-    %% --- Mises à jour automatisées ---
-    WT[watchtower\n--label-enable] -. "met à jour" .-> NC
-    WT -. "met à jour" .-> DB
-    note right of WT
-      Surveille seulement les conteneurs
-      avec le label watchtower.enable=true
-    end
+  %% --- Mises à jour automatisées ---
+  WT[watchtower<br/>--label-enable]
+  WT -. met à jour .-> NC
+  WT -. met à jour .-> DB
 
-    %% Styles pour repérer rapidement les volumes/fichiers
-    classDef vol fill:#eef,stroke:#88a,stroke-width:1px;
-    class EVENTS,IMGS,NCD,FEEDS vol;
+  %% Styles
+  classDef vol fill:#eef,stroke:#88a,stroke-width:1px;
+  class EVENTS,IMGS,NCD,FEEDS vol;
 
 ```
 
