@@ -1,49 +1,68 @@
 #!/usr/bin/env bash
 set -euo pipefail
-src="$1"
-bn="$(basename "$src")"
-[[ "$bn" = .* ]] && exit 0
-[[ "$src" =~ /_optimized/ ]] && exit 0
-[[ ! -f "$src" ]] && exit 0
 
-dir="$(dirname "$src")"
-outdir="$dir/_optimized"
-mkdir -p "$outdir"
+f="$1"
+[ -f "$f" ] || exit 0
 
-base="${bn%.*}"
-ext="${bn##*.}"; ext="${ext,,}"
+# Per-file state so we don't re-optimize endlessly when the file changes
+STATE_DIR="${STATE_DIR:-/work/.imgworker_state}"
+mkdir -p "$STATE_DIR"
+key="$(printf '%s' "$f" | sha1sum | awk '{print $1}')"
+stamp="$STATE_DIR/$key"
 
-is_anim_gif=false
-if [[ "$ext" == "gif" ]]; then
-  frames="$(magick identify -format "%n" "$src" 2>/dev/null || echo 1)"
-  [[ "${frames:-1}" -gt 1 ]] && is_anim_gif=true
+cur="$(stat -c '%Y:%s' "$f")"
+if [ -f "$stamp" ] && [ "$(<"$stamp")" = "$cur" ]; then
+  exit 0  # unchanged since last run
 fi
 
-make_variant () {
-  local w="$1"
-  local dest="$outdir/${base}-${w}.webp"
-  if [[ -f "$dest" && "$dest" -nt "$src" ]]; then
-    echo "✓ up-to-date: $dest"; return 0
-  fi
-  local tmp="$dest.tmp"
-  echo "→ building:  $dest"
-  if $is_anim_gif; then
-    gif2webp -q 70 -m 6 -mt -loop 0 -resize "$w" 0 "$src" -o "$tmp"
+ext="${f##*.}"
+ext="${ext,,}"  # lowercase
+before=$(stat -c %s "$f")
+
+optjpg() {
+  if command -v jpegoptim >/dev/null; then
+    jpegoptim --strip-all --all-progressive --max="${JPEG_QUALITY:-85}" "$f" >/dev/null || true
   else
-    magick "$src" -auto-orient -strip -filter Lanczos -resize "${w}x>" -quality 72 "$tmp"
+    mogrify -strip -interlace Plane -sampling-factor 4:2:0 -quality "${JPEG_QUALITY:-85}" "$f"
   fi
-  mv -f "$tmp" "$dest"
 }
 
-make_variant 400
-make_variant 800
-make_variant 1200
+optpng() {
+  if command -v pngquant >/dev/null; then
+    pngquant --force --skip-if-larger --ext .png --quality="${PNG_MIN_QUALITY:-65}-${PNG_MAX_QUALITY:-85}" "$f" || true
+  fi
+  if command -v optipng >/dev/null; then
+    optipng -o2 -quiet "$f" || true
+  else
+    mogrify -strip -define png:compression-level=9 "$f"
+  fi
+}
 
-tiny="$outdir/${base}-tiny.b64"
-if [[ ! -f "$tiny" || "$tiny" -ot "$src" ]]; then
-  echo "→ tiny b64:  $tiny"
-  frame="$src"; $is_anim_gif && frame="$src[0]"
-  magick "$frame" -auto-orient -resize 24 -blur 0x1 -quality 40 jpg:- \
-    | base64 | tr -d '\n' > "$tiny"
-fi
+optgif() {
+  if command -v gifsicle >/dev/null; then
+    gifsicle -O3 -b "$f" || true   # in-place
+  else
+    mogrify -strip "$f"
+  fi
+}
+
+optwebp() {
+  # Recompress webp via temp file, then atomic replace
+  tmp="$(mktemp --suffix=.webp)"
+  cwebp -quiet -q "${WEBP_QUALITY:-80}" "$f" -o "$tmp"
+  mv -f "$tmp" "$f"
+}
+
+case "$ext" in
+  jpg|jpeg) optjpg ;;
+  png)      optpng ;;
+  gif)      optgif ;;
+  webp)     optwebp ;;
+  *)        ;;    # unknown -> skip
+esac
+
+after=$(stat -c %s "$f")
+echo "$cur" > "$stamp"   # mark processed for this mtime/size
+
+printf '✓ optimized %s (%s → %s bytes)\n' "$f" "$before" "$after"
 
