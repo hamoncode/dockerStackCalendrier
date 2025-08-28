@@ -51,3 +51,33 @@ body {
 #detailModal button {
 	float: right;
 }
+
+/* Make the modal scrollable if content is taller than the screen */
+#detailModal {
+	max-height: 90dvh;
+	/* cap to viewport height */
+	overflow-y: auto;
+	/* enable scrolling inside */
+}
+
+/* Prevent tall posters from overflowing the modal */
+#detailModal img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	max-height: 60dvh;
+	/* clamp portrait posters */
+	object-fit: contain;
+}
+
+/* Mobile: use a bottom-sheet style */
+@media (max-width: 700px) {
+	#detailModal {
+		top: 0;
+		left: 0;
+		transform: none;
+		width: 100vw;
+		max-height: 90dvh;
+		border-radius: 10px 10px 0 0;
+	}
+}

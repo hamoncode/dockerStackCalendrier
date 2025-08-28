@@ -3,19 +3,18 @@
 
 <head>
 	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Calendrier public</title>
 
-<link rel="stylesheet" href="./vendor/fullcalendar/index.global.min.css">
-<script src="./vendor/fullcalendar/index.global.min.js"></script>
-<script src="./vendor/fullcalendar/locales-all.global.min.js"></script>
-<script src="./fullcalendar.js?v=1" defer></script>
-
-	<!-- Your styles -->
+	<link rel="stylesheet" href="./vendor/fullcalendar/index.global.min.css">
 	<link rel="stylesheet" href="./style.css" />
+
+	<script src="./vendor/fullcalendar/index.global.min.js" defer></script>
+	<script src="./vendor/fullcalendar/locales-all.global.min.js" defer></script>
+	<script src="./fullcalendar.js?v=2" defer></script>
 </head>
 
 <body>
-
 	<div id="filters">Chargement des filtres…</div>
 	<div id="calendar"></div>
 
@@ -30,9 +29,6 @@
 		<p id="modalDesc"></p>
 		<p><a id="modalLink" href="#" target="_blank" style="display:none;">Plus d’infos →</a></p>
 	</div>
-
-	<!-- Your app logic (kept the same) -->
-	<script src="./fullcalendar.js" defer></script>
 </body>
 
 </html>

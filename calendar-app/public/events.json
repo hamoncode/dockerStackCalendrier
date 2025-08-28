@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "1",
+    "title": "Hackfest 2025",
+    "start": "2025-10-16",
+    "end": "2025-10-19",
+    "allDay": true,
+    "extendedProps": {
+      "association": "REI",
+      "description": "Le Hackfest est l’un des plus grands événements de cybersécurité au Canada, réunissant à Québec des professionnels, étudiants et passionnés autour de conférences, ateliers, CTF et espaces « villages » pour apprendre, partager et réseauter. \n\nRestez à l'affut de vos courriel pour vous inscrire et participer aux Hackfest édition Ghost in the Shell!",
+      "location": " Centre des Congrès de Québec",
+      "image": "images/hackfest2025.png"
+    }
+  }
+]

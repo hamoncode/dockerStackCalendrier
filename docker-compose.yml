@@ -8,6 +8,14 @@ services:
     restart: unless-stopped
     networks: [web]
 
+  imgworker:
+    build: ./imgworker
+    restart: unless-stopped
+    volumes:
+      - ./calendar-app/public/images:/mnt/images
+    depends_on:
+      - converter
+
   watchtower:
     image: containrrr/watchtower
     restart: unless-stopped
@@ -18,7 +26,11 @@ services:
   db:
     image: mariadb:10.11
     labels:
+<<<<<<< HEAD
       - "com.centurylinklabs.watchtower.enable: true"
+=======
+      - "com.centurylinklabs.watchtower.enable:true"
+>>>>>>> 7b23ff899666216e8656e287e0d729c1976ad9c9
     restart: unless-stopped
     env_file: .env
     environment:
@@ -33,7 +45,11 @@ services:
   nextcloud:
     image: nextcloud:31-apache
     labels:
+<<<<<<< HEAD
       - "com.centurylinklabs.watchtower.enable: true"
+=======
+    - "com.centurylinklabs.watchtower.enable:true"
+>>>>>>> 7b23ff899666216e8656e287e0d729c1976ad9c9
     restart: unless-stopped
     env_file:
       - .env
