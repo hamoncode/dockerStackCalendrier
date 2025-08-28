@@ -4,7 +4,7 @@ set -euo pipefail
 # ====== CONFIG ======
 NC_CONTAINER="${NC_CONTAINER:-dockerstackcalendrier-nextcloud-1}"
 CAL_GROUP="calendar-only"
-TEMP_PASS="${TEMP_PASS:-Welcome1}"
+TEMP_PASS="${TEMP_PASS:-TEMP_PASS1}"
 
 # Quotas — give enough space for attachments
 SETUP_QUOTA="${SETUP_QUOTA:-50 MB}"         # for first login/init
