@@ -81,3 +81,24 @@ body {
 		border-radius: 10px 10px 0 0;
 	}
 }
+/* Fix FullCalendar header toolbar buttons on mobile */
+.fc-toolbar-chunk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem; /* spacing between buttons */
+  align-items: center;
+}
+
+.fc-toolbar-title {
+  font-size: 1.2rem; /* shrink a bit for small screens */
+  text-align: center;
+}
+
+/* Optional: smaller buttons on narrow screens */
+@media (max-width: 600px) {
+  .fc-button {
+    font-size: 0.8rem;
+    padding: 4px 6px;
+  }
+}
+

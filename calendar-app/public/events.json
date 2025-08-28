@@ -11,5 +11,18 @@
       "location": " Centre des Congrès de Québec",
       "image": "images/hackfest2025.png"
     }
+  },
+  {
+    "id": "2",
+    "title": "Party Néon",
+    "start": "2025-09-12T21:00:00-04:00",
+    "end": "2025-09-12T23:59:00-04:00",
+    "allDay": false,
+    "extendedProps": {
+      "association": "REI",
+      "description": "🎉 Party de la Rentrée UQO 🎉\nEn collab’ avec la REEMA, le Comité Compétition de l'UQO, AED, REI, REETS et AEEMP\n\n📅 Vendredi 12 septembre\n🕘 21h00 – juste après le Rallye des Résidences\n📍 [Bar Le Tonik, Pavillon Taché]\n\n✨ Party NEON – viens briller dans le noir!\n🎧 DJ Flip aux platines toute la nuit\n🍹 Spéciaux à gogo – tu ne veux pas manquer ça!\n\n🔥 Une soirée pour lancer la session en grand! 🔥",
+      "location": "Bar le Tonik",
+      "image": "images/partyNéon2025.png"
+    }
   }
 ]
