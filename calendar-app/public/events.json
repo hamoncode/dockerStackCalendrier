@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "id": "1",
+    "title": "événement",
+    "start": "2025-08-18T10:00:00-04:00",
+    "end": "2025-08-18T11:00:00-04:00",
+    "allDay": false,
+    "extendedProps": {
+      "association": "rei",
+      "description": "venez en grand nombre à notre événement de dj silencieux à la bibliothèque de Lucien-Brault!!\nc\nc\n\nc\nc\nc\nc\nc\nc\nc\n\nc\nc\n\nc\nc",
+      "location": "bibliothèque Lucien-Brault",
+      "image": "images/wallpaper.png"
+    }
+  },
+  {
+    "id": "2",
+    "title": "yoou",
+    "start": "2025-09-17",
+    "end": "2025-09-18",
+    "allDay": true,
+    "extendedProps": {
+      "association": "rei",
+      "description": "",
+      "location": "",
+      "image": null
+    }
+  }
+]
