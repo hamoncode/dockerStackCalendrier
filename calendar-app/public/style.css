@@ -115,11 +115,18 @@ body.modal-open {
 	line-height: 1.35;
 }
 
-/* Desktop: lift modal a bit + two columns */
+/* Desktop */
 @media (min-width:900px) {
 	#detailModal {
-		inset: calc(var(--pad)/2) var(--pad) var(--pad) var(--pad);
-		/* sits higher */
+		/* override earlier inset and pin near the top */
+		inset: unset;
+		top: max(8px, env(safe-area-inset-top) + 2px);
+		right: var(--pad);
+		bottom: var(--pad);
+		left: var(--pad);
+
+		/* grow the box since the top gap is smaller */
+		max-height: calc(100dvh - (var(--pad) + 10px));
 	}
 
 	.modal__content {
@@ -134,13 +141,11 @@ body.modal-open {
 		align-self: start;
 		max-height: 70dvh;
 		margin-top: .25rem;
-		/* poster left, taller allowed */
 	}
 
 	.modal__content>p,
 	.modal__content>div {
 		grid-column: 2;
-		/* text right */
 	}
 }
 
