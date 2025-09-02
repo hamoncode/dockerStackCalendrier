@@ -11,7 +11,7 @@
 
 	<script src="./vendor/fullcalendar/index.global.min.js" defer></script>
 	<script src="./vendor/fullcalendar/locales-all.global.min.js" defer></script>
-	<script src="./fullcalendar.js?v=9" defer></script>
+	<script src="./fullcalendar.js?v=10" defer></script>
 </head>
 
 <body>
@@ -19,16 +19,16 @@
 	<div id="calendar"></div>
 
 	<!-- Backdrop & Modal -->
-	<div id="detailBackdrop" onclick="closeModal()"></div>
+	<div id="detailBackdrop" style="display:none" onclick="closeModal()"></div>
 
-	<div id="detailModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+	<div id="detailModal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
 		<div class="modal__header">
 			<h2 id="modalTitle"></h2>
 			<button onclick="closeModal()" aria-label="Fermer">×</button>
 		</div>
 
 		<div class="modal__content" id="detailContent">
-			<!-- Poster first (left column) -->
+			<!-- Poster (left column on desktop) -->
 			<img id="modalImage" src="" alt="" style="display:none;">
 
 			<!-- All text grouped (right column) -->

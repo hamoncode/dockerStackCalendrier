@@ -11,9 +11,14 @@ let assocColors = {};
 const LOCALE = 'fr-CA';
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Always start closed (covers reloads + bfcache restores)
+  closeModal();
+  window.addEventListener('pageshow', () => closeModal(), { once: true });
+
   const filtersEl = document.getElementById('filters');
   const calEl = document.getElementById('calendar');
 
+  // Load colors then events
   fetch('/assoc-colors.json', { cache: 'no-store' })
     .then(r => r.json())
     .then(colors => {
@@ -26,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return { ...e, backgroundColor: c, borderColor: c };
       });
 
+      // Filters
       const assocs = Array.from(new Set(eventsData.map(e => e.extendedProps.association)));
       filtersEl.innerHTML = '';
       assocs.forEach(assoc => {
@@ -40,10 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
         cb.addEventListener('change', () => calendar.refetchEvents());
       });
 
+      // Calendar
       window.calendar = new FullCalendar.Calendar(calEl, {
         initialView: 'dayGridMonth',
         headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
-
         locale: 'fr',
         firstDay: 1,
         buttonText: { today:'Aujourd’hui', month:'Mois', week:'Semaine', day:'Jour', list:'Liste' },
@@ -68,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // Title
           document.getElementById('modalTitle').textContent = e.title;
 
-          // Date (separate from time)
+          // Date row
           const dateStr = e.allDay
             ? fmtDate(e.start)
             : (e.end && !sameDay ? `${fmtDate(e.start)} → ${fmtDate(e.end)}` : fmtDate(e.start));
@@ -96,14 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
           else { link.style.display = 'none'; }
 
           // Show modal
-          const backdrop = document.getElementById('detailBackdrop');
-          const modal    = document.getElementById('detailModal');
-          const content  = document.getElementById('detailContent');
-
-          backdrop.style.display = 'block';
-          modal.style.display = 'flex';
+          document.getElementById('detailBackdrop').style.display = 'block';
+          document.getElementById('detailModal').style.display = 'flex';
           document.body.classList.add('modal-open');
-          if (content) content.scrollTop = 0;
+          document.getElementById('detailContent').scrollTop = 0;
           document.addEventListener('keydown', escHandler);
         }
       });
