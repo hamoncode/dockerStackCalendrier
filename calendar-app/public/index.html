@@ -7,11 +7,19 @@
 	<title>Calendrier public</title>
 
 	<link rel="stylesheet" href="./vendor/fullcalendar/index.global.min.css">
+<<<<<<< HEAD
 	<link rel="stylesheet" href="./style.css?v=10" />
 
 	<script src="./vendor/fullcalendar/index.global.min.js" defer></script>
 	<script src="./vendor/fullcalendar/locales-all.global.min.js" defer></script>
 	<script src="./fullcalendar.js?v=10" defer></script>
+=======
+	<link rel="stylesheet" href="./style.css?v=3" />
+
+	<script src="./vendor/fullcalendar/index.global.min.js" defer></script>
+	<script src="./vendor/fullcalendar/locales-all.global.min.js" defer></script>
+	<script src="./fullcalendar.js?v=2" defer></script>
+>>>>>>> 4da515689405f5491c42515a3c59e29ee2804446
 </head>
 
 <body>
@@ -19,6 +27,7 @@
 	<div id="calendar"></div>
 
 	<!-- Backdrop & Modal -->
+<<<<<<< HEAD
 	<div id="detailBackdrop" style="display:none" onclick="closeModal()"></div>
 
 	<div id="detailModal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -43,6 +52,17 @@
 		<div class="modal__footer">
 			<a id="modalLink" href="#" target="_blank" style="display:none;">Plus d’infos →</a>
 		</div>
+=======
+	<div id="detailBackdrop" onclick="closeModal()"></div>
+	<div id="detailModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+		<button onclick="closeModal()" aria-label="Fermer">×</button>
+		<h2 id="modalTitle"></h2>
+		<p><strong>Date&nbsp;:</strong> <span id="modalDate"></span></p>
+		<p><strong>Lieu&nbsp;:</strong> <span id="modalLocation"></span></p>
+		<img id="modalImage" src="" alt="" style="display:none;">
+		<p id="modalDesc"></p>
+		<p><a id="modalLink" href="#" target="_blank" style="display:none;">Plus d’infos →</a></p>
+>>>>>>> 4da515689405f5491c42515a3c59e29ee2804446
 	</div>
 </body>
 

@@ -184,3 +184,54 @@ body.modal-open {
 		}
 	}
 }
+
+/* Make the modal scrollable if content is taller than the screen */
+#detailModal {
+	max-height: 90dvh;
+	/* cap to viewport height */
+	overflow-y: auto;
+	/* enable scrolling inside */
+}
+
+/* Prevent tall posters from overflowing the modal */
+#detailModal img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	max-height: 60dvh;
+	/* clamp portrait posters */
+	object-fit: contain;
+}
+
+/* Mobile: use a bottom-sheet style */
+@media (max-width: 700px) {
+	#detailModal {
+		top: 0;
+		left: 0;
+		transform: none;
+		width: 100vw;
+		max-height: 90dvh;
+		border-radius: 10px 10px 0 0;
+	}
+}
+/* Fix FullCalendar header toolbar buttons on mobile */
+.fc-toolbar-chunk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem; /* spacing between buttons */
+  align-items: center;
+}
+
+.fc-toolbar-title {
+  font-size: 1.2rem; /* shrink a bit for small screens */
+  text-align: center;
+}
+
+/* Optional: smaller buttons on narrow screens */
+@media (max-width: 600px) {
+  .fc-button {
+    font-size: 0.8rem;
+    padding: 4px 6px;
+  }
+}
+

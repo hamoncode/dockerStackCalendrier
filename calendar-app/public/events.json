@@ -1,6 +1,7 @@
 [
   {
     "id": "1",
+<<<<<<< HEAD
     "title": "événement",
     "start": "2025-08-18T10:00:00-04:00",
     "end": "2025-08-18T11:00:00-04:00",
@@ -10,10 +11,22 @@
       "description": "venez en grand nombre à notre événement de dj silencieux à la bibliothèque de Lucien-Brault!!\nc\nc\n\nc\nc\nc\nc\nc\nc\nc\n\nc\nc\n\nc\nc",
       "location": "bibliothèque Lucien-Brault",
       "image": "images/wallpaper.png"
+=======
+    "title": "Hackfest 2025",
+    "start": "2025-10-16",
+    "end": "2025-10-19",
+    "allDay": true,
+    "extendedProps": {
+      "association": "REI",
+      "description": "Le Hackfest est l’un des plus grands événements de cybersécurité au Canada, réunissant à Québec des professionnels, étudiants et passionnés autour de conférences, ateliers, CTF et espaces « villages » pour apprendre, partager et réseauter. \n\nRestez à l'affut de vos courriel pour vous inscrire et participer aux Hackfest édition Ghost in the Shell!",
+      "location": " Centre des Congrès de Québec",
+      "image": "images/hackfest2025.png"
+>>>>>>> 4da515689405f5491c42515a3c59e29ee2804446
     }
   },
   {
     "id": "2",
+<<<<<<< HEAD
     "title": "yoou",
     "start": "2025-09-17",
     "end": "2025-09-18",
@@ -23,6 +36,17 @@
       "description": "",
       "location": "",
       "image": null
+=======
+    "title": "Party Néon",
+    "start": "2025-09-12T21:00:00-04:00",
+    "end": "2025-09-12T23:59:00-04:00",
+    "allDay": false,
+    "extendedProps": {
+      "association": "REI",
+      "description": "🎉 Party de la Rentrée UQO 🎉\nEn collab’ avec la REEMA, le Comité Compétition de l'UQO, AED, REI, REETS et AEEMP\n\n📅 Vendredi 12 septembre\n🕘 21h00 – juste après le Rallye des Résidences\n📍 [Bar Le Tonik, Pavillon Taché]\n\n✨ Party NEON – viens briller dans le noir!\n🎧 DJ Flip aux platines toute la nuit\n🍹 Spéciaux à gogo – tu ne veux pas manquer ça!\n\n🔥 Une soirée pour lancer la session en grand! 🔥",
+      "location": "Bar le Tonik",
+      "image": "images/partyNéon2025.png"
+>>>>>>> 4da515689405f5491c42515a3c59e29ee2804446
     }
   }
 ]
