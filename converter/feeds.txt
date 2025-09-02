@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-rei=http://nextcloud/remote.php/dav/public-calendars/M46XaeF965kNRPkW?export
-=======
 REI=http://nextcloud/remote.php/dav/public-calendars/6DgT6EEg8oB8LEFM?export
->>>>>>> 4da515689405f5491c42515a3c59e29ee2804446
