@@ -1,4 +1,4 @@
-/* Layout basics */
+/* ==== Basics ==== */
 body {
 	font-family: Arial, sans-serif;
 	margin: 1rem;
@@ -20,9 +20,10 @@ body {
 :root {
 	--pad: clamp(10px, 2.5vw, 20px);
 	--modal-w: min(960px, calc(100dvw - 2*var(--pad)));
+	/* desktop width when poster exists */
 }
 
-/* Backdrop */
+/* ==== Backdrop & shell ==== */
 #detailBackdrop {
 	display: none;
 	position: fixed;
@@ -31,22 +32,20 @@ body {
 	z-index: 900;
 }
 
-/* Lock background scroll when modal open */
 body.modal-open {
 	overflow: hidden;
 }
 
-/* Modal shell */
 #detailModal {
 	display: none;
 	position: fixed;
 	inset: var(--pad);
 	width: var(--modal-w);
 	margin: 0 auto;
+	z-index: 1000;
 	background: #fff;
 	border-radius: 12px;
 	box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
-	z-index: 1000;
 
 	display: flex;
 	flex-direction: column;
@@ -54,16 +53,16 @@ body.modal-open {
 	overflow: hidden;
 	/* only content area scrolls */
 	scrollbar-gutter: stable;
-	/* avoid layout shift when scrollbar appears */
+	/* avoid layout shift */
 }
 
 /* Header / Footer */
 .modal__header,
 .modal__footer {
 	flex: 0 0 auto;
-	background: #fff;
 	position: sticky;
 	z-index: 1;
+	background: #fff;
 	padding: .75rem 1rem;
 }
 
@@ -80,7 +79,6 @@ body.modal-open {
 	border-top: 1px solid #eee;
 }
 
-/* Close button */
 #detailModal button {
 	margin-left: auto;
 	font-size: 1.25rem;
@@ -104,7 +102,6 @@ body.modal-open {
 	width: 100%;
 	height: auto;
 	max-height: 40dvh;
-	/* trimmed to free space */
 	object-fit: contain;
 	border-radius: 8px;
 	margin-top: .5rem;
@@ -115,41 +112,63 @@ body.modal-open {
 	line-height: 1.35;
 }
 
-/* Desktop */
+/* ==== Desktop layout ==== */
 @media (min-width:900px) {
+
+	/* Pin near the top with comfortable paddings */
 	#detailModal {
-		/* override earlier inset and pin near the top */
 		inset: unset;
 		top: max(8px, env(safe-area-inset-top) + 2px);
 		right: var(--pad);
 		bottom: var(--pad);
 		left: var(--pad);
-
-		/* grow the box since the top gap is smaller */
 		max-height: calc(100dvh - (var(--pad) + 10px));
 	}
 
+	/* Two-column grid: poster | text */
 	.modal__content {
 		display: grid;
-		grid-template-columns: minmax(260px, 42%) 1fr;
-		column-gap: 1rem;
+		grid-template-columns: minmax(280px, 40%) minmax(420px, 1fr);
+		grid-auto-rows: min-content;
+		column-gap: 1.25rem;
+		row-gap: .5rem;
 		align-items: start;
 	}
 
-	.modal__content>#modalImage {
+	/* Poster (left, first row) */
+	#modalImage {
 		grid-column: 1;
+		grid-row: 1;
 		align-self: start;
+		margin-top: 0;
 		max-height: 70dvh;
-		margin-top: .25rem;
 	}
 
-	.modal__content>p,
-	.modal__content>div {
+	/* Meta rows (Date, Lieu) as tidy label/value grid on the right */
+	.modal__content>p {
 		grid-column: 2;
+		display: grid;
+		grid-template-columns: 6.5rem 1fr;
+		column-gap: .6rem;
+		margin: 0 0 .45rem;
+		align-items: start;
+		line-height: 1.35;
+	}
+
+	.modal__content>p>strong {
+		font-weight: 600;
+	}
+
+	/* Description below meta rows */
+	#modalDesc {
+		grid-column: 2;
+		max-width: 64ch;
+		line-height: 1.32;
+		margin-top: .25rem;
 	}
 }
 
-/* Mobile bottom-sheet */
+/* ==== Mobile bottom-sheet ==== */
 @media (max-width:700px) {
 	#detailModal {
 		inset: auto 0 0 0;
@@ -159,120 +178,19 @@ body.modal-open {
 	}
 }
 
-/* Align poster and text tops on desktop; keep two columns */
-@media (min-width:900px) {
-	.modal__content {
-		display: grid;
-		grid-template-columns: minmax(260px, 42%) 1fr;
-		column-gap: 1.25rem;
-		align-items: start;
-		grid-auto-rows: min-content;
-	}
-
-	/* Put image in left col, first row (top aligned) */
-	#modalImage {
-		grid-column: 1;
-		grid-row: 1;
-		/* <-- key line */
-		align-self: start;
-		margin-top: 0;
-	}
-
-	/* Place the two meta lines (Date, Lieu) in rows 1 and 2 of the right col */
-	.modal__content>p:first-of-type {
-		grid-column: 2;
-		grid-row: 1;
-		margin-top: 0;
-	}
-
-	.modal__content>p:nth-of-type(2) {
-		grid-column: 2;
-		grid-row: 2;
-	}
-
-	/* Description flows under them in row 3 */
-	#modalDesc {
-		grid-column: 2;
-		grid-row: 3;
-	}
-}
-
-/* if there is NO image, collapse to single column (modern browsers) */
+/* ==== When there is NO image: collapse to single column & narrower modal (desktop) ==== */
 @supports selector(:has(*)) {
 	@media (min-width:900px) {
+
+		/* image element exists but is hidden via style="display:none" */
+		#detailModal:has(#modalImage[style*="display: none"]) {
+			width: min(720px, calc(100dvw - 2*var(--pad)));
+			/* narrower dialog */
+		}
+
 		.modal__content:has(#modalImage[style*="display: none"]) {
 			display: block;
+			/* single column */
 		}
-	}
-}
-
-/* Desktop: tighten right column spacing + readable line width */
-@media (min-width:900px) {
-
-	/* a bit more compact grid */
-	.modal__content {
-		row-gap: .5rem;
-		/* tighter vertical rhythm */
-		column-gap: 1.25rem;
-		grid-template-columns: minmax(280px, 40%) minmax(420px, 1fr);
-	}
-
-	/* keep the poster rules you already have */
-
-	/* tighten paragraph spacing in the right column */
-	.modal__content>p,
-	.modal__content>div {
-		grid-column: 2;
-		max-width: 64ch;
-		/* limit line length for readability */
-	}
-
-	/* collapse default p margins and control rhythm */
-	.modal__content>p {
-		margin: 0 0 .5rem;
-		line-height: 1.35;
-	}
-
-	/* align "Date :" and "Lieu :" labels neatly */
-	.modal__content>p>strong {
-		display: inline-block;
-		min-width: 5.5rem;
-		/* label width; tweak to taste */
-	}
-
-	/* description a touch tighter too */
-	#modalDesc {
-		margin-top: .25rem;
-		line-height: 1.35;
-	}
-}
-
-/* Desktop: make Date/Lieu rows a tidy 2-col grid and tighten spacing */
-@media (min-width:900px) {
-
-	/* Turn the two <p> meta rows into label/value grid rows */
-	.modal__content>p {
-		display: grid;
-		grid-template-columns: 6.5rem 1fr;
-		/* label | value */
-		column-gap: .6rem;
-		margin: 0 0 .45rem;
-		/* small vertical rhythm */
-		align-items: start;
-	}
-
-	/* Keep labels neat; no extra min-width hacks needed now */
-	.modal__content>p>strong {
-		display: contents;
-		/* lets the text act as the label cell cleanly */
-		font-weight: 600;
-	}
-
-	/* Keep the description close and readable */
-	#modalDesc {
-		margin-top: .25rem;
-		max-width: 64ch;
-		/* readable line length */
-		line-height: 1.32;
 	}
 }
