@@ -26,11 +26,7 @@ services:
   db:
     image: mariadb:10.11
     labels:
-<<<<<<< HEAD
       - "com.centurylinklabs.watchtower.enable:true"
-=======
-      - "com.centurylinklabs.watchtower.enable: true"
->>>>>>> 4da515689405f5491c42515a3c59e29ee2804446
     restart: unless-stopped
     env_file: .env
     environment:
@@ -45,11 +41,7 @@ services:
   nextcloud:
     image: nextcloud:31-apache
     labels:
-<<<<<<< HEAD
     - "com.centurylinklabs.watchtower.enable:true"
-=======
-      - "com.centurylinklabs.watchtower.enable: true"
->>>>>>> 4da515689405f5491c42515a3c59e29ee2804446
     restart: unless-stopped
     env_file:
       - .env
