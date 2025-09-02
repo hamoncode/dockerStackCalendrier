@@ -1,3 +1,4 @@
+/* ==== Basics ==== */
 body {
 	font-family: Arial, sans-serif;
 	margin: 1rem;
@@ -16,40 +17,172 @@ body {
 	margin: 0 auto;
 }
 
-/* Backdrop */
+:root {
+	--pad: clamp(10px, 2.5vw, 20px);
+	--modal-w: min(960px, calc(100dvw - 2*var(--pad)));
+}
+
+/* ==== Backdrop & shell ==== */
 #detailBackdrop {
 	display: none;
 	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: rgba(0, 0, 0, 0.5);
+	inset: 0;
+	background: rgba(0, 0, 0, .5);
 	z-index: 900;
 }
 
-/* Modal */
+body.modal-open {
+	overflow: hidden;
+}
+
 #detailModal {
 	display: none;
 	position: fixed;
-	top: 20%;
-	left: 50%;
-	transform: translateX(-50%);
-	background: #fff;
-	padding: 1rem;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+	inset: var(--pad);
+	width: var(--modal-w);
+	margin: 0 auto;
 	z-index: 1000;
-	max-width: 400px;
-	width: 90%;
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+
+	display: flex;
+	flex-direction: column;
+	max-height: calc(100dvh - 2*var(--pad));
+	overflow: hidden;
+	scrollbar-gutter: stable;
 }
 
-#detailModal img {
-	max-width: 100%;
-	margin-top: .5rem;
+/* Header / Footer */
+.modal__header,
+.modal__footer {
+	flex: 0 0 auto;
+	position: sticky;
+	z-index: 1;
+	background: #fff;
+	padding: .75rem 1rem;
+}
+
+.modal__header {
+	top: 0;
+	display: flex;
+	align-items: center;
+	gap: .5rem;
+	border-bottom: 1px solid #eee;
+}
+
+.modal__footer {
+	bottom: 0;
+	border-top: 1px solid #eee;
 }
 
 #detailModal button {
-	float: right;
+	margin-left: auto;
+	font-size: 1.25rem;
+	line-height: 1;
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+}
+
+/* Scrollable content */
+.modal__content {
+	flex: 1 1 auto;
+	overflow: auto;
+	padding: 1rem;
+	overscroll-behavior: contain;
+}
+
+/* Media & text constraints */
+#modalImage {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-height: 40dvh;
+	object-fit: contain;
+	border-radius: 8px;
+	margin-top: .5rem;
+}
+
+#modalDesc {
+	white-space: pre-wrap;
+	line-height: 1.35;
+}
+
+/* ==== Desktop: real 2-column layout (poster | all text) ==== */
+@media (min-width:900px) {
+	#detailModal {
+		inset: unset;
+		top: max(8px, env(safe-area-inset-top) + 2px);
+		right: var(--pad);
+		bottom: var(--pad);
+		left: var(--pad);
+		max-height: calc(100dvh - (var(--pad) + 10px));
+	}
+
+	.modal__content {
+		display: grid;
+		grid-template-columns: minmax(280px, 40%) minmax(420px, 1fr);
+		column-gap: 1.25rem;
+		align-items: start;
+	}
+
+	/* Poster (left) */
+	#modalImage {
+		grid-column: 1;
+		grid-row: 1;
+		align-self: start;
+		margin-top: 0;
+		max-height: 70dvh;
+	}
+
+	/* Text block (right) */
+	#modalText {
+		grid-column: 2;
+		grid-row: 1;
+		align-self: start;
+		max-width: 64ch;
+	}
+
+	#modalText p {
+		display: grid;
+		grid-template-columns: 6.5rem 1fr;
+		column-gap: .6rem;
+		margin: 0 0 .45rem;
+		line-height: 1.35;
+	}
+
+	#modalText p strong {
+		font-weight: 600;
+	}
+
+	#modalDesc {
+		margin-top: .25rem;
+		line-height: 1.32;
+	}
+}
+
+/* ==== Mobile bottom-sheet ==== */
+@media (max-width:700px) {
+	#detailModal {
+		inset: auto 0 0 0;
+		height: min(90dvh, 720px);
+		width: 100dvw;
+		border-radius: 12px 12px 0 0;
+	}
+}
+
+/* ==== No-image: make dialog narrower + single column (desktop) ==== */
+@supports selector(:has(*)) {
+	@media (min-width:900px) {
+		#detailModal:has(#modalImage[style*="display: none"]) {
+			width: min(720px, calc(100dvw - 2*var(--pad)));
+		}
+
+		.modal__content:has(#modalImage[style*="display: none"]) {
+			display: block;
+		}
+	}
 }
 
 /* Make the modal scrollable if content is taller than the screen */
@@ -81,24 +214,26 @@ body {
 		border-radius: 10px 10px 0 0;
 	}
 }
+
 /* Fix FullCalendar header toolbar buttons on mobile */
 .fc-toolbar-chunk {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem; /* spacing between buttons */
-  align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	/* spacing between buttons */
+	align-items: center;
 }
 
 .fc-toolbar-title {
-  font-size: 1.2rem; /* shrink a bit for small screens */
-  text-align: center;
+	font-size: 1.2rem;
+	/* shrink a bit for small screens */
+	text-align: center;
 }
 
 /* Optional: smaller buttons on narrow screens */
 @media (max-width: 600px) {
-  .fc-button {
-    font-size: 0.8rem;
-    padding: 4px 6px;
-  }
+	.fc-button {
+		font-size: 0.8rem;
+		padding: 4px 6px;
+	}
 }
-
