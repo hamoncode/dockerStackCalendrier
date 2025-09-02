@@ -7,11 +7,11 @@
 	<title>Calendrier public</title>
 
 	<link rel="stylesheet" href="./vendor/fullcalendar/index.global.min.css">
-	<link rel="stylesheet" href="./style.css?v=9" />
+	<link rel="stylesheet" href="./style.css?v=10" />
 
 	<script src="./vendor/fullcalendar/index.global.min.js" defer></script>
 	<script src="./vendor/fullcalendar/locales-all.global.min.js" defer></script>
-	<script src="./fullcalendar.js?v=8" defer></script>
+	<script src="./fullcalendar.js?v=9" defer></script>
 </head>
 
 <body>
@@ -28,10 +28,16 @@
 		</div>
 
 		<div class="modal__content" id="detailContent">
-			<p><strong>Date&nbsp;:</strong> <span id="modalDate"></span></p>
-			<p><strong>Lieu&nbsp;:</strong> <span id="modalLocation"></span></p>
+			<!-- Poster first (left column) -->
 			<img id="modalImage" src="" alt="" style="display:none;">
-			<div id="modalDesc"></div>
+
+			<!-- All text grouped (right column) -->
+			<div id="modalText">
+				<p><strong>Date&nbsp;:</strong> <span id="modalDate"></span></p>
+				<p><strong>Heure&nbsp;:</strong> <span id="modalTime"></span></p>
+				<p><strong>Lieu&nbsp;:</strong> <span id="modalLocation"></span></p>
+				<div id="modalDesc"></div>
+			</div>
 		</div>
 
 		<div class="modal__footer">

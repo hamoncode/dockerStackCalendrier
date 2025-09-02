@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const filtersEl = document.getElementById('filters');
   const calEl = document.getElementById('calendar');
 
-  // 1) Load association-color map, then events
   fetch('/assoc-colors.json', { cache: 'no-store' })
     .then(r => r.json())
     .then(colors => {
@@ -27,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return { ...e, backgroundColor: c, borderColor: c };
       });
 
-      // Build filters
       const assocs = Array.from(new Set(eventsData.map(e => e.extendedProps.association)));
       filtersEl.innerHTML = '';
       assocs.forEach(assoc => {
@@ -36,14 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
         cb.type = 'checkbox'; cb.id = id; cb.value = assoc; cb.checked = true;
 
         const lbl = document.createElement('label');
-        lbl.htmlFor = id;
-        lbl.append(cb, ' ', assoc);
-
+        lbl.htmlFor = id; lbl.append(cb, ' ', assoc);
         filtersEl.append(lbl);
+
         cb.addEventListener('change', () => calendar.refetchEvents());
       });
 
-      // 3) FullCalendar
       window.calendar = new FullCalendar.Calendar(calEl, {
         initialView: 'dayGridMonth',
         headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
@@ -65,33 +61,41 @@ document.addEventListener('DOMContentLoaded', () => {
         eventClick: info => {
           const e = info.event;
 
-          // Formatters
           const fmtDate = d => d?.toLocaleDateString(LOCALE, { year:'numeric', month:'long', day:'numeric' });
-          const fmtDateTime = d => d?.toLocaleString(LOCALE, {
-            year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit'
-          });
+          const fmtTime = d => d?.toLocaleTimeString(LOCALE, { hour:'2-digit', minute:'2-digit' });
+          const sameDay = e.end && e.start && e.start.toDateString() === e.end.toDateString();
 
-          // Fill modal
+          // Title
           document.getElementById('modalTitle').textContent = e.title;
 
+          // Date (separate from time)
           const dateStr = e.allDay
             ? fmtDate(e.start)
-            : `${fmtDateTime(e.start)}${e.end ? ` → ${fmtDateTime(e.end)}` : ''}`;
+            : (e.end && !sameDay ? `${fmtDate(e.start)} → ${fmtDate(e.end)}` : fmtDate(e.start));
           document.getElementById('modalDate').textContent = dateStr;
 
+          // Time row
+          const timeStr = e.allDay
+            ? 'Toute la journée'
+            : `${fmtTime(e.start)}${e.end ? ` → ${fmtTime(e.end)}` : ''}`;
+          document.getElementById('modalTime').textContent = timeStr;
+
+          // Location + Description
           document.getElementById('modalLocation').textContent = e.extendedProps.location || '—';
           document.getElementById('modalDesc').textContent = e.extendedProps.description || '';
 
+          // Poster
           const img = document.getElementById('modalImage');
           if (e.extendedProps.image) { img.src = e.extendedProps.image; img.style.display = 'block'; }
           else { img.style.display = 'none'; }
 
+          // Link
           const link = document.getElementById('modalLink');
           const href = e.extendedProps.registrationLink || e.url;
           if (href) { link.href = href; link.style.display = 'inline-block'; }
           else { link.style.display = 'none'; }
 
-          // Show modal (single, clean block)
+          // Show modal
           const backdrop = document.getElementById('detailBackdrop');
           const modal    = document.getElementById('detailModal');
           const content  = document.getElementById('detailContent');
