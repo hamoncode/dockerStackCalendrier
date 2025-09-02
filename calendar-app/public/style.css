@@ -246,3 +246,33 @@ body.modal-open {
 		line-height: 1.35;
 	}
 }
+
+/* Desktop: make Date/Lieu rows a tidy 2-col grid and tighten spacing */
+@media (min-width:900px) {
+
+	/* Turn the two <p> meta rows into label/value grid rows */
+	.modal__content>p {
+		display: grid;
+		grid-template-columns: 6.5rem 1fr;
+		/* label | value */
+		column-gap: .6rem;
+		margin: 0 0 .45rem;
+		/* small vertical rhythm */
+		align-items: start;
+	}
+
+	/* Keep labels neat; no extra min-width hacks needed now */
+	.modal__content>p>strong {
+		display: contents;
+		/* lets the text act as the label cell cleanly */
+		font-weight: 600;
+	}
+
+	/* Keep the description close and readable */
+	#modalDesc {
+		margin-top: .25rem;
+		max-width: 64ch;
+		/* readable line length */
+		line-height: 1.32;
+	}
+}
