@@ -16,68 +16,108 @@ body {
 	margin: 0 auto;
 }
 
+:root {
+	--pad: clamp(10px, 2.5vw, 20px);
+	--modal-w: min(720px, calc(100dvw - 2*var(--pad)));
+}
+
 /* Backdrop */
 #detailBackdrop {
 	display: none;
 	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: rgba(0, 0, 0, 0.5);
+	inset: 0;
+	background: rgba(0, 0, 0, .5);
 	z-index: 900;
 }
 
-/* Modal */
+/* Lock background scroll when modal open */
+body.modal-open {
+	overflow: hidden;
+}
+
+/* Modal shell */
 #detailModal {
 	display: none;
 	position: fixed;
-	top: 20%;
-	left: 50%;
-	transform: translateX(-50%);
+	inset: var(--pad);
+	width: var(--modal-w);
+	margin: 0 auto;
 	background: #fff;
-	padding: 1rem;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+	border-radius: 12px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
 	z-index: 1000;
-	max-width: 400px;
-	width: 90%;
+
+	display: flex;
+	flex-direction: column;
+	max-height: calc(100dvh - 2*var(--pad));
+	overflow: hidden;
+	/* content area handles scrolling */
 }
 
+/* Header / Footer */
+.modal__header,
+.modal__footer {
+	flex: 0 0 auto;
+	background: #fff;
+	position: sticky;
+	z-index: 1;
+	padding: .75rem 1rem;
+}
+
+.modal__header {
+	top: 0;
+	display: flex;
+	align-items: center;
+	gap: .5rem;
+	border-bottom: 1px solid #eee;
+}
+
+.modal__footer {
+	bottom: 0;
+	border-top: 1px solid #eee;
+}
+
+/* Close button */
+#detailModal button {
+	margin-left: auto;
+	font-size: 1.25rem;
+	line-height: 1;
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+}
+
+/* Scrollable content */
+.modal__content {
+	flex: 1 1 auto;
+	overflow: auto;
+	padding: 1rem;
+	overscroll-behavior: contain;
+	/* prevent scroll chaining */
+}
+
+/* Media & text constraints */
 #detailModal img {
-	max-width: 100%;
+	display: block;
+	width: 100%;
+	height: auto;
+	max-height: 45dvh;
+	object-fit: contain;
+	border-radius: 8px;
 	margin-top: .5rem;
 }
 
-#detailModal button {
-	float: right;
+#modalDesc {
+	white-space: pre-wrap;
+	line-height: 1.35;
 }
 
-/* Make the modal scrollable if content is taller than the screen */
-#detailModal {
-	max-height: 90dvh;
-	/* cap to viewport height */
-	overflow-y: auto;
-	/* enable scrolling inside */
-}
-
-/* Prevent tall posters from overflowing the modal */
-#detailModal img {
-	display: block;
-	max-width: 100%;
-	height: auto;
-	max-height: 60dvh;
-	/* clamp portrait posters */
-	object-fit: contain;
-}
-
-/* Mobile: use a bottom-sheet style */
-@media (max-width: 700px) {
+/* Mobile bottom-sheet */
+@media (max-width:700px) {
 	#detailModal {
-		top: 0;
-		left: 0;
-		transform: none;
-		width: 100vw;
-		max-height: 90dvh;
-		border-radius: 10px 10px 0 0;
+		inset: auto 0 0 0;
+		height: min(90dvh, 720px);
+		width: 100dvw;
+		border-radius: 12px 12px 0 0;
 	}
 }
