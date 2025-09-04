@@ -1,4 +1,5 @@
 #!/bin/sh
+echo "!! === INITIALIZE.SH DEBUT === !!"
 set -eu
 
 # wait for DB

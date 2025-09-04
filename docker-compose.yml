@@ -52,7 +52,7 @@ services:
     volumes:
       - nextcloud_data:/var/www/html
       - "./vendor:/vendor:ro"
-      - "./scripts/initialize.sh:/docker-entrypoint-init.d/initialize.sh:ro"
+      - "./scripts/initialize.sh:/docker-entrypoint-hooks.d/before-starting/initialize.sh:ro"
     networks:
       - web
 

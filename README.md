@@ -66,9 +66,11 @@ cd dockerStackCalendrier
 
 cp .env.example .env
 
-# Éditez `.env` avec vos valeurs (ex. `NEXTCLOUD_HOST`, `DB_PASSWORD`, etc.)
-
 nano .env
+
+# Éditez `.env` avec vos valeurs (ex. `NEXTCLOUD_HOST`, `DB_PASSWORD`, etc.)
+# Il est important que vous preniez note du nom d'usager et du mot de 
+#   passe administrateur NextCloud, car vous en aurez besoin à la prochaine étape
 
 ```
 
@@ -87,12 +89,12 @@ docker-compose up -d --build
 
 ```
 
-4. Accéder à l'interface web de Nextcloud pour finaliser l'installation.
+5. Ouvrez l'interface NextCloud sur votre navigateur web en entrant l'adresse suivante : `http://localhost:8080/`
 
-example: 
-port 8080 --> http://localhost:8080 (nextcloud)
-port 8081 --> http://localhost:8081 (Calendrier des Assos)
-
+6. Enregistrez-vous en tant qu'administrateur avec les identifiants de l'étape 2
+7. Cliquez sur l'icône de votre compte administrateur, puis sur "ajouter des applications"
+8. Installez l'application "Agenda"
+9. Visitez le calendrier des élèves avec l'URL suivante : `http://localhost:8081/`
 ---
 
 ## comment ajouter un association en tant qu'utilisateur nextcloud
