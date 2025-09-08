@@ -11,7 +11,7 @@ php /var/www/html/occ config:system:set trusted_domains 2 --value=nextcloud     
 php /var/www/html/occ config:system:set trusted_domains 3 --value=127.0.0.1       || true
 
 # if Calendar already enabled, exit quickly
-if su -s /bin/sh -c "php /var/www/html/occ app:list | grep -q '^  - calendar:'" www-data; then
+if /bin/sh -c "php /var/www/html/occ app:list | grep -q '^  - calendar:'" www-data; then
   exit 0
 fi
 
@@ -24,11 +24,11 @@ if [ -f /vendor/calendar-v5.5.1.tar.gz ]; then
   echo "Installing Calendar from vendor/calendar-v5.5.1.tar.gz"
   tar -xzf /vendor/calendar-v5.5.1.tar.gz -C /var/www/html/custom_apps
   chown -R www-data:www-data /var/www/html/custom_apps/calendar
-  su -s /bin/sh -c "php /var/www/html/occ app:enable calendar" www-data || true
+  /bin/sh -c "php /var/www/html/occ app:enable calendar" www-data || true
 fi
 
 # 2) if still not enabled, try latest compatible from GitHub (best-effort)
-if ! su -s /bin/sh -c "php /var/www/html/occ app:list | grep -q '^  - calendar:'" www-data; then
+if ! /bin/sh -c "php /var/www/html/occ app:list | grep -q '^  - calendar:'" www-data; then
   echo "Trying to fetch Calendar releases from GitHub…"
   for TAG in $(curl -fsSL https://api.github.com/repos/nextcloud-releases/calendar/releases?per_page=15 \
                | sed -n 's/.*"tag_name": "\(v[0-9.]\+\)".*/\1/p'); do
@@ -37,7 +37,7 @@ if ! su -s /bin/sh -c "php /var/www/html/occ app:list | grep -q '^  - calendar:'
     if curl -fsSL "$URL" -o /tmp/calendar.tgz; then
       tar -xzf /tmp/calendar.tgz -C /var/www/html/custom_apps && rm -f /tmp/calendar.tgz
       chown -R www-data:www-data /var/www/html/custom_apps/calendar
-      if su -s /bin/sh -c "php /var/www/html/occ app:enable calendar" www-data; then
+      if /bin/sh -c "php /var/www/html/occ app:enable calendar" www-data; then
         echo "Calendar $TAG enabled."
         break
       else

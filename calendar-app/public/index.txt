@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr-CA">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Calendrier public</title>
+
+	<link rel="stylesheet" href="./vendor/fullcalendar/index.global.min.css">
+	<link rel="stylesheet" href="./style.css?v=10" />
+
+	<script src="./vendor/fullcalendar/index.global.min.js" defer></script>
+	<script src="./vendor/fullcalendar/locales-all.global.min.js" defer></script>
+	<script src="./fullcalendar.js?v=10" defer></script>
+</head>
+
+<body>
+	<div id="filters">Chargement des filtres…</div>
+	<div id="calendar"></div>
+
+	<!-- Backdrop & Modal -->
+	<div id="detailBackdrop" style="display:none" onclick="closeModal()"></div>
+
+	<div id="detailModal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+		<div class="modal__header">
+			<h2 id="modalTitle"></h2>
+			<button onclick="closeModal()" aria-label="Fermer">×</button>
+		</div>
+
+		<div class="modal__content" id="detailContent">
+			<!-- Poster (left column on desktop) -->
+			<img id="modalImage" src="" alt="" style="display:none;">
+
+			<!-- All text grouped (right column) -->
+			<div id="modalText">
+				<p><strong>Date&nbsp;:</strong> <span id="modalDate"></span></p>
+				<p><strong>Heure&nbsp;:</strong> <span id="modalTime"></span></p>
+				<p><strong>Lieu&nbsp;:</strong> <span id="modalLocation"></span></p>
+				<div id="modalDesc"></div>
+			</div>
+		</div>
+
+		<div class="modal__footer">
+			<a id="modalLink" href="#" target="_blank" style="display:none;">Plus d’infos →</a>
+		</div>
+	</div>
+</body>
+
+</html>
