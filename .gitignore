@@ -1,2 +1,4 @@
 converter/feeds.txt
 .env
+calendar-app/public/images
+calendar-app/public/events.json
