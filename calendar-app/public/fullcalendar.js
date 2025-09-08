@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cb.classList.add("filtres-bouton");
         cb.innerText = assoc;
         cb.style.background = assocColors[assoc];
-        cb.style.boxShadow = "3px 4px 0 "+luminositéCouleur(assocColors[assoc],-40);
+        cb.style.boxShadow = "0.2em 0.3em 0 "+luminositéCouleur(assocColors[assoc],-40);
 
         filtersEl.append(cb);
 

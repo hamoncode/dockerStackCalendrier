@@ -12,8 +12,38 @@
     </head>
     <body>
 
-        <div id="filtres">Chargement des filtres</div>
-        <div id="calendrier"></div>
+        <div id="app">
+            <div id="filtres">Chargement des filtres</div>
+            <div id="calendrier"></div>
+        </div>
 
+        <!-- Backdrop & Modal -->
+        <div id="detailBackdrop" onclick="closeModal()">
+            <div id="detailModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+                <div id="modal_header">
+                    <h2 id="modalTitle"></h2>
+                    <button onclick="closeModal()" aria-label="Fermer">×</button>
+                </div>
+
+                <div class="modal_content" id="detailContent">
+                    <!-- Poster (left column on desktop) -->
+                    <div id="modalImageContainer">
+                        <img id="modalImage" src="" alt="">
+                    </div>
+
+                    <!-- All text grouped (right column) -->
+                    <div id="modalText">
+                        <p><strong>Date&nbsp;:</strong> <span id="modalDate"></span></p>
+                        <p><strong>Heure&nbsp;:</strong> <span id="modalTime"></span></p>
+                        <p><strong>Lieu&nbsp;:</strong> <span id="modalLocation"></span></p>
+                        <div id="modalDesc"></div>
+                    </div>
+                </div>
+
+                <div id="modal_footer">
+                    <a id="lienInscription" href="#" target="_blank"><button id="boutonInscription">Plus d’infos →</button></a>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
