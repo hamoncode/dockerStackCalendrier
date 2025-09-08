@@ -98,31 +98,54 @@ document.addEventListener('DOMContentLoaded', () => {
       return fetch('/events.json', { cache: 'no-store' }).then(r => r.json());
     })
     .then(data => {
-      eventsData = data.map(e => {
-        const c = assocColors[e.extendedProps.association] || '#3788d8';
-        return { ...e, backgroundColor: c, borderColor: c };
-      });
 
-      // Filters
-      const assocs = Array.from(new Set(eventsData.map(e => e.extendedProps.association)));
-      filtersEl.innerHTML = '';
-      assocs.forEach(assoc => {
-        const id = `f-${assoc}`;
-        const cb = document.createElement('div');
-        cb.id = id;
-        cb.setAttribute("data-checked",true);
-        cb.classList.add("filtres-bouton");
-        cb.innerText = assoc;
-        cb.style.background = assocColors[assoc];
-        cb.style.boxShadow = "0.2em 0.3em 0 "+luminositéCouleur(assocColors[assoc],-40);
+      if (!(data instanceof Array)){
 
-        filtersEl.append(cb);
+        console.error("Le fichier 'events.json' n'est pas bien construit.");
+        filtersEl.innerHTML = '';
+        eventsData = [];
+      } else {
 
-        cb.addEventListener('change', () => calendar.refetchEvents());
-        cb.addEventListener('mouseenter', () => boutonCurseurEntré(cb));
-        cb.addEventListener('mouseleave', () => boutonCurseurSortis(cb));
-        cb.addEventListener('click', () => boutonClique(cb));
-      });
+        eventsData = data.map(e => {
+          try {
+            const c = assocColors[e.extendedProps.association] || '#3788d8';
+            return { ...e, backgroundColor: c, borderColor: c };
+          } catch {
+            console.error("Événement mal formé.");
+            return null;
+          }
+        });
+
+        eventsData = eventsData.filter( e => e===null?false:true );
+
+        // Filters
+        // Extrait la liste d'association de la liste des événement. Ainsi, une association qui n'a pas d'événements n'aura pas de bouton de filtre en haut.
+        const assocs = Array.from(new Set(eventsData.map(e => e.extendedProps.association)));
+        filtersEl.innerHTML = '';
+        assocs.forEach(assoc => {
+
+          if(!Object.keys(assocColors).includes(assoc)){
+            console.error("L'association "+assoc+" n'a pas de couleur associée. Le nom du calendrier correspond-il à la clé du dictionnaire dans 'assoc-colors.json'?");
+            return;
+          }
+
+          const id = `f-${assoc}`;
+          const cb = document.createElement('div');
+          cb.id = id;
+          cb.setAttribute("data-checked",true);
+          cb.classList.add("filtres-bouton");
+          cb.innerText = assoc;
+          cb.style.background = assocColors[assoc];
+          cb.style.boxShadow = "0.2em 0.3em 0 "+luminositéCouleur(assocColors[assoc],-40);
+
+          filtersEl.append(cb);
+
+          cb.addEventListener('change', () => calendar.refetchEvents());
+          cb.addEventListener('mouseenter', () => boutonCurseurEntré(cb));
+          cb.addEventListener('mouseleave', () => boutonCurseurSortis(cb));
+          cb.addEventListener('click', () => boutonClique(cb));
+        });
+      }
 
       // Calendar
       window.calendar = new FullCalendar.Calendar(calEl, {
