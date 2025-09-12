@@ -26,10 +26,24 @@ body {
     box-sizing: border-box;
 }
 
+#filtres-conteneur {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    margin: 1rem;
+    border: 6px solid var(--fc-button-hover-bg-color);
+    border-radius: 16px;
+    background-color: #0003;
+
+    font-size: 2.5em;
+}
+
 #filtres {
     display: flex;
-    flex-direction: row;
-    margin: 1rem;
+    overflow-x: scroll;
+    width: 10px;
+    flex-grow: 100;
+    padding: 0.5em;
 }
 
 .filtres-bouton{
@@ -39,10 +53,22 @@ body {
     margin-right: 1em;
     border-radius: 10%;
     border: 15px solid #0000;
+}
 
-    font-size: 3em;
+#étiquette-filtres{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5em;
+    margin-right: 1em;
+    width: fit-content;
 
-    overflow: scroll;
+    border-radius: 16px;
+
+    background-color: var(--fc-button-bg-color);
+    color: var(--fc-button-text-color);
+    font-weight: bold;
+
 }
 
 /* === Propriétés du calendrier FullCalendar === */
