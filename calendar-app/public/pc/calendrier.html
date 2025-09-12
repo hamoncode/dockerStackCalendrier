@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr-CA">
+    <head>
+        <meta charset="UTF-8"/>
+
+        <link rel="stylesheet" href="calendrier.css?=v5">
+        
+        <script src="/vendor/fullcalendar/index.global.min.js?=v5" defer></script>
+	    <!-- <script src="/vendor/fullcalendar/locales-all.global.min.js" defer></script> -->
+        <script src="/pc-mobile-detect.js?=v5"></script>
+        <script src="/fullcalendar.js?=v5"></script>
+    </head>
+    <body>
+        
+        <div id="app">
+            <div id="filtres-conteneur">
+                <div id="étiquette-filtres">Filtres :</div>
+                <div id="filtres">Chargement des filtres</div>
+            </div>
+            <div id="calendrier"></div>
+        </div>
+
+        <!-- Backdrop & Modal -->
+        <div id="detailBackdrop" onclick="closeModal()" style="display:none;">
+            <div id="detailModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+                <div id="modal_header">
+                    <h2 id="modalTitle"></h2>
+                    <button onclick="closeModal()" aria-label="Fermer">×</button>
+                </div>
+
+                <div class="modal_content" id="detailContent">
+                    <!-- Poster (left column on desktop) -->
+                    <div id="modalImageContainer">
+                        <img id="modalImage" src="" alt="">
+                    </div>
+
+                    <!-- All text grouped (right column) -->
+                    <div id="modalText">
+                        <p><strong>Date&nbsp;:</strong> <span id="modalDate"></span></p>
+                        <p><strong>Heure&nbsp;:</strong> <span id="modalTime"></span></p>
+                        <p><strong>Lieu&nbsp;:</strong> <span id="modalLocation"></span></p>
+                        <div id="modalDesc"></div>
+                    </div>
+                </div>
+
+                <div id="modal_footer">
+                    <a id="lienInscription" href="#" target="_blank"><button id="boutonInscription">Plus d’infos →</button></a>
+                </div>
+            </div>
+        </div>
+
+    </body>
+
+</html>
