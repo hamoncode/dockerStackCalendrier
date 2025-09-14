@@ -6,15 +6,21 @@ from datetime import datetime
 from dateutil.tz import tzutc
 from urllib.parse import urlparse
 from urllib.parse import quote
+from typing import Optional
 
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"}
 
-def normalize_root_url(p: str) -> str | None:
-    if not p: 
+
+def normalize_root_url(p: Optional[str]) -> Optional[str]:
+    """Return a root-relative, percent-encoded URL like /images/foo%20bar.png."""
+    if not p:
         return None
-    # make it root-relative and percent-encode each segment
+    p = p.strip()
+    if p.startswith("http://") or p.startswith("https://"):
+        return p
     parts = p.lstrip("./").lstrip("/").split("/")
-    return "/" + "/".join(quote(seg) for seg in parts)
+    return "/" + "/".join(quote(seg) for seg in parts if seg)
+
 
 def _image_from_categories(vevent, images_dir: Path) -> str | None:
     try:
@@ -272,8 +278,13 @@ def main():
             else:
                 # use category directive instead of a global default
                 img_rel = _image_from_categories(vevent, images_dir)
+             
+            try:
+                img_rel = normalize_root_url(img_rel)
+            except Exception as e:
+                print(f"[WARN] normalize_root_url failed for {img_rel!r}: {e}")
+                img_rel = None
 
-            img_rel = normalize_root_url(img_rel)
 
             e = {
                 "id":     str(counter),
@@ -285,7 +296,7 @@ def main():
                     "association": assoc,
                     "description": str(vevent.get("description", "")),
                     "location":    str(vevent.get("location", "")),
-                    "image":       img_rel or None,
+                    "image": img_rel or None,
                 }
             }
             if vevent.get("url"):
