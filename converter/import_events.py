@@ -5,8 +5,16 @@ from icalendar import Calendar
 from datetime import datetime
 from dateutil.tz import tzutc
 from urllib.parse import urlparse
+from urllib.parse import quote
 
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"}
+
+def normalize_root_url(p: str) -> str | None:
+    if not p: 
+        return None
+    # make it root-relative and percent-encode each segment
+    parts = p.lstrip("./").lstrip("/").split("/")
+    return "/" + "/".join(quote(seg) for seg in parts)
 
 def _image_from_categories(vevent, images_dir: Path) -> str | None:
     try:
@@ -265,6 +273,7 @@ def main():
                 # use category directive instead of a global default
                 img_rel = _image_from_categories(vevent, images_dir)
 
+            img_rel = normalize_root_url(img_rel)
 
             e = {
                 "id":     str(counter),
