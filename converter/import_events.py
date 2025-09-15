@@ -135,6 +135,11 @@ def _ext_from_url(u: str) -> str:
     ext = Path(path).suffix
     return ext if ext else ".bin"
 
+def avoir_mot_de_passe(utilisateur: str) -> str:
+    with open("/config/motsDePasses.json","r") as f:
+        return json.load(f)[utilisateur]
+    return None
+
 def save_event_attachments(vevent, images_dir: Path, assoc: str) -> list[Path]:
     """
     Extract ATTACH properties from a VEVENT.
@@ -165,23 +170,7 @@ def save_event_attachments(vevent, images_dir: Path, assoc: str) -> list[Path]:
         else:
             text_val = str(raw)
 
-        if text_val.startswith("http://") or text_val.startswith("https://"):
-            # URL attachment
-            try:
-                r = requests.get(text_val, timeout=20)
-                r.raise_for_status()
-                ext = _ext_from_url(text_val)
-                # prefer FMTTYPE if extension is generic
-                if ext == ".bin" and fmt:
-                    ext = _safe_ext_from_fmt(fmt)
-                fname = _filename_for_attach(assoc, attach_idx, ext)
-                out = images_dir / fname
-                out.write_bytes(r.content)
-                saved_paths.append(out)
-                attach_idx += 1
-            except Exception:
-                continue
-        else:
+        if prop.params.get("ENCODING") == "BASE64" and prop.params.get("VALUE") == "BINARY":
             # Inline/base64 attachment
             try:
                 # Some producers set ENCODING=BASE64 or VALUE=BINARY
@@ -200,6 +189,44 @@ def save_event_attachments(vevent, images_dir: Path, assoc: str) -> list[Path]:
                 fname = _filename_for_attach(assoc, attach_idx, ext)
                 out = images_dir / fname
                 out.write_bytes(b)
+                saved_paths.append(out)
+                attach_idx += 1
+            except Exception:
+                continue
+        elif text_val.startswith("http://") or text_val.startswith("https://"):
+            # URL attachment
+            try:
+                r = requests.get("http://nextcloud/remote.php/webdav/Calendar"+text_val, timeout=20)
+                r.raise_for_status()
+                ext = _ext_from_url(text_val)
+                # prefer FMTTYPE if extension is generic
+                if ext == ".bin" and fmt:
+                    ext = _safe_ext_from_fmt(fmt)
+                fname = _filename_for_attach(assoc, attach_idx, ext)
+                out = images_dir / fname
+                out.write_bytes(r.content)
+                saved_paths.append(out)
+                attach_idx += 1
+            except Exception:
+                continue
+        else:
+            # Nextcloud peux partager ses fichiers avec une url dans le format '/f/<SHARE_ID>'
+            # Dans ce cas, il faut aller chercher la ressource directement dans le système de fichiers 
+            # avec l'URL 'http://nextcloud/remote.php/webdav/Calendar/<nom-du-fichier>' avec les codes de
+            # connection de l'utilisateur qui a créé l'événement.
+            try:
+                # Aller chercher le mot de passe
+                mot_de_passe = avoir_mot_de_passe(assoc)
+                
+                nom_fichier = prop.params.get("FILENAME")
+                r = requests.get("http://nextcloud/remote.php/webdav/Calendar"+nom_fichier, headers={"Authorization":"Basic "+base64.b64encode(bytes(assoc+":"+mot_de_passe,"utf-8")).decode("utf-8")}, timeout=20)
+                r.raise_for_status()
+                ext = _ext_from_url(nom_fichier)
+                if ext == ".bin" and fmt:
+                    ext = _safe_ext_from_fmt(fmt)
+                fname = _filename_for_attach(assoc, attach_idx, ext)
+                out = images_dir / fname
+                out.write_bytes(r.content)
                 saved_paths.append(out)
                 attach_idx += 1
             except Exception:
@@ -245,7 +272,7 @@ def main():
         except Exception as e:
             print(f"!! {assoc}: fetch/parse failed: {e}")
             continue
-
+        
         for vevent in cal.walk("VEVENT"):
             dtstart = vevent.get("dtstart").dt
             dtend   = vevent.get("dtend").dt if vevent.get("dtend") else None
@@ -258,7 +285,7 @@ def main():
             if saved_imgs:
                 try:
                     rel = saved_imgs[0].relative_to(Path("calendar-app/public"))
-                    img_rel = str(rel).replace("\\", "/")
+                    img_rel = "/"+str(rel).replace("\\", "/")
                 except ValueError:
                     img_rel = f"images/{saved_imgs[0].name}"
             else:
