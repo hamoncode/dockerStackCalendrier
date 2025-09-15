@@ -3,3 +3,4 @@ converter/motsDePasses.json
 .env
 calendar-app/public/images
 calendar-app/public/events.json
+calendar-app/public/assoc-colors.json
