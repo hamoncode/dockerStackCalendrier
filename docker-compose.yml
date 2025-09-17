@@ -68,7 +68,7 @@ services:
       # images (optional but recommended)
       IMAGE_INTERVAL: 300
     volumes:
-      - ./converter/feeds.txt:/config/feeds.txt:ro
+      - ./converter/feeds.txt:/config/fils_ics.txt:ro
       - ./calendar-app/public:/app/calendar-app/public
       - nextcloud_data:/ncdata:ro
     depends_on: [nextcloud]

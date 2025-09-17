@@ -1,0 +1,2 @@
+REI=http://nextcloud/remote.php/dav/public-calendars/9rnDFXnzKyNNoBQw?export
+REMAA=http://nextcloud/remote.php/dav/public-calendars/DGAf4EGzfrQDegwx?export
