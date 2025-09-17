@@ -72,6 +72,9 @@ def save_event_attachments(vevent: Event, assoc: str, utilisateur: str) -> Path:
         if not nom_fichier:
             break
         
+        if ( SORTIE_IMAGES / assoc / ( nom_fichier.split(".")[0] ) ).exists():
+            return SORTIE_IMAGES / assoc / nom_fichier.split(".")[0] / "tailles.txt"
+        
         répertoire_source = RACINE_NEXTCLOUD / "data" / utilisateur / "files/Calendar" / nom_fichier
         répertoire_sortie = SORTIE_IMAGES / assoc / nom_fichier
         répertoire_sortie.parent.mkdir(parents=True, exist_ok=True)
@@ -86,7 +89,7 @@ def save_event_attachments(vevent: Event, assoc: str, utilisateur: str) -> Path:
             pass
 
         return répertoire_sortie
-    pass
+    return None
 
 def main():
 
