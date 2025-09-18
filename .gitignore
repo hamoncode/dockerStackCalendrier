@@ -1,4 +1,5 @@
 converter/feeds.txt
+converter/motsDePasses.json
 .env
 calendar-app/public/images
 calendar-app/public/events.json

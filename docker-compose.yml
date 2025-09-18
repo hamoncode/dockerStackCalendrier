@@ -60,18 +60,12 @@ services:
     build:
       context: ./converter
     environment:
-      GROUP_BY_SLUG: "0"
       KEEP_ORIGINAL_NAMES: "1"
       IMAGE_OVERWRITE: "1"          
       #events 
       INTERVAL: 60                     
-      FEEDS_FILE: /config/feeds.txt    
-      OUTPUT: /app/calendar-app/public/events.json
       PYTHONUNBUFFERED: "1"
       # images (optional but recommended)
-      NC_DATA_ROOT: /ncdata
-      IMAGE_SRC_TEMPLATE: "/ncdata/data/{slug}/files/Calendar"
-      IMAGE_OUT_DIR: /app/calendar-app/public/images
       IMAGE_INTERVAL: 300
     volumes:
       - ./converter/feeds.txt:/config/feeds.txt:ro
