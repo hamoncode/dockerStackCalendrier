@@ -73,8 +73,17 @@ nano .env
 #   passe administrateur NextCloud, car vous en aurez besoin à la prochaine étape
 
 ```
+3. Ajouter le nom d'usager et le mot de passe au fichier converter/motsDePasses.json
+```bash
+nano converter/motsDePasses.json
+# Entrez par paires le nom d'utilisateur ADMIN et son mot de passe associé 
+#   selon l'exemple suivant : 
+{
+  "nom-d'utilisateur":"mot-de-passe"
+}
+```
 
-3. créer réseaux docker web
+4. Créer réseaux docker web
 
 ```bash
 docker network create web || true
@@ -92,9 +101,7 @@ docker compose up -d --build
 5. Ouvrez l'interface NextCloud sur votre navigateur web en entrant l'adresse suivante : `http://localhost:8080/`
 
 6. Enregistrez-vous en tant qu'administrateur avec les identifiants de l'étape 2
-7. Cliquez sur l'icône de votre compte administrateur, puis sur "ajouter des applications"
-8. Installez l'application "Agenda"
-9. Visitez le calendrier des élèves avec l'URL suivante : `http://localhost:8081/`
+7. Visitez le calendrier des élèves avec l'URL suivante : `http://localhost:8081/`
 ---
 
 ## comment ajouter un association en tant qu'utilisateur nextcloud
@@ -147,13 +154,10 @@ docker-compose restart converter
 
 4. Remplir les détails de l'événement (titre, date, description, etc.)
 
-5.**pour ajouter une image** : 
+5. **pour ajouter une image** : 
     
 ![Étape 1](Readme_screenshots/ajoutevent1.png)
 ![Étape 2](Readme_screenshots/ajoutevent2.png)
-![Étape 3](Readme_screenshots/ajoutevent3.png)
-
-**Très important** : on doit peser sur entrer après avoir entrer le nom de l'image dans les tags pour que l'image soit bien prise en compte
 
 6. **sauvegarder** l'événement
 
