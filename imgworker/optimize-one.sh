@@ -24,7 +24,7 @@ optjpg() {
 optpng() {
   echo "optimisation de ${rep}/${nom}.${ext}"
   echo "création de ${rep}/${nom}/"
-  mkdir "${rep}/${nom}/"
+  mkdir "${rep}/${nom}_${ext}/"
 
   # Créer le registre de tailles
   echo "création de ${rep}/${nom}/tailles.txt"
