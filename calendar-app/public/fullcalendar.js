@@ -1,8 +1,11 @@
+const fenêtreContextuelleMinimiséeEvent = new Event("fenêtreContextuelleMinimiséeEvent");
+
 function closeModal() {
   document.getElementById('detailModal').style.display = 'none';
   document.getElementById('detailBackdrop').style.display = 'none';
   document.body.classList.remove('modal-open');
   document.removeEventListener('keydown', escHandler);
+  document.dispatchEvent(fenêtreContextuelleMinimiséeEvent);
 }
 function escHandler(e){ if (e.key === 'Escape') closeModal(); }
 
@@ -29,6 +32,19 @@ function boutonClique(bouton){
   }
 
   calendar.refetchEvents();
+}
+
+function miseÀJourImageEnsembleSrc(image, ensembleSrc){
+  const largeur = image.parentNode.clientWidth - parseFloat(window.getComputedStyle(image.parentNode).paddingLeft) - parseFloat(window.getComputedStyle(image.parentNode).paddingRight);
+  for (i = 0; i < ensembleSrc.length; i++){
+    if (ensembleSrc[i][0] < largeur){
+      image.src = ensembleSrc[Math.max(i-1,0)][2];
+      console.log("Image taille : "+ensembleSrc[Math.max(i-1,0)][0]+"x"+ensembleSrc[Math.max(i-1,0)][1]);
+      return;
+    }
+  }
+  image.src = ensembleSrc[ensembleSrc.length-1][2];
+  console.log("Image taille : "+ensembleSrc[Math.max(i-1,0)][0]+"x"+ensembleSrc[Math.max(i-1,0)][1]);
 }
 
 // Prend un string représentant une couleur et renvoie une liste sur le format RGB 0-255
@@ -82,10 +98,57 @@ function luminositéCouleur(couleur, lumPourcent){
   return RGB2String(RGB);
 }
 
+async function importerImage(url, image){
+  image.removeEventListener
+
+  if (!url){
+    image.style.display = 'none';
+    return;
+  }
+
+  const parties = url.split("/");
+  if (parties[parties.length - 1] !== "tailles.txt"){
+    image.src = url;
+    image.style.display = 'block';
+  }else{
+    try{
+      const ext = parties[parties.length - 2].split("_").at(-1);
+      const nom = parties[parties.length - 2].substring(0, parties[parties.length - 2].length - ext.length - 1);
+      const rép = url.substring(0, url.length - parties[parties.length - 1].length - 1);
+      const réponse = await fetch(url);
+      if (!réponse.ok){
+        throw new Error("Impossible de télécharger le registres de tailles de "+parties[parties.length-2]);
+      }
+
+      const contenus = await réponse.text();
+      const lignes = contenus.split("\n");
+      ensembleSrc = []
+      for (i = 0; i < lignes.length; i++){
+        if (lignes[i].length == 0){
+          continue;
+        }
+        nombres = lignes[i].split("x");
+        source = rép + "/" + nom + "-" + nombres[0] + "." + ext;
+        ensembleSrc.push( [parseInt(nombres[0]), parseInt(nombres[1]), source] );
+      }
+      function appelerFonction(){ miseÀJourImageEnsembleSrc(image,ensembleSrc); }
+      function retirerÉvénements(){ image.removeEventListener("resize",appelerFonction); image.removeEventListener("fenêtreContextuelleMinimiséeEvent", retirerÉvénements); }
+      new ResizeObserver(appelerFonction).observe(image);
+      image.addEventListener("fenêtreContextuelleMinimiséeEvent", retirerÉvénements);
+      appelerFonction();
+
+    }catch(error){
+      console.error(error.message);
+      image.style.display = 'none';
+      return;
+    }
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // Always start closed (covers reloads + bfcache restores)
   closeModal();
-  window.addEventListener('pageshow', () => closeModal(), { once: true });
+  document.getElementById("detailModal").addEventListener("click", e => {e.stopImmediatePropagation();});
 
   const filtersEl = document.getElementById('filtres');
   const calEl = document.getElementById('calendrier');
@@ -192,9 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('modalDesc').textContent = e.extendedProps.description || '';
 
           // Poster
-          const img = document.getElementById('modalImage');
-          if (e.extendedProps.image) { img.src = e.extendedProps.image; img.style.display = 'block'; }
-          else { img.style.display = 'none'; }
+          importerImage(e.extendedProps.image, document.getElementById("modalImage"));
 
           // Link
           const link = document.getElementById('lienInscription');
