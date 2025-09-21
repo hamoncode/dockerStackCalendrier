@@ -72,21 +72,28 @@ def save_event_attachments(vevent: Event, assoc: str, utilisateur: str) -> Path:
         if not nom_fichier:
             break
         
+        if ( SORTIE_IMAGES / assoc / ( nom_fichier.replace(".","_") ) ).exists():
+            return SORTIE_IMAGES / assoc / nom_fichier.replace(".","_") / "tailles.txt"
+        
         répertoire_source = RACINE_NEXTCLOUD / "data" / utilisateur / "files/Calendar" / nom_fichier
         répertoire_sortie = SORTIE_IMAGES / assoc / nom_fichier
         répertoire_sortie.parent.mkdir(parents=True, exist_ok=True)
+        os.chmod(répertoire_sortie.parent.parent, 0o777)
+        os.chmod(répertoire_sortie.parent, 0o777)
         
         try :
             if répertoire_sortie.exists():
-                    if répertoire_source.stat().st_size != répertoire_sortie.stat().st_size or hash_file(répertoire_source) != hash_file(répertoire_sortie) :
-                        shutil.copy2(répertoire_source, répertoire_sortie)
+                if répertoire_source.stat().st_size != répertoire_sortie.stat().st_size or hash_file(répertoire_source) != hash_file(répertoire_sortie) :
+                    shutil.copy2(répertoire_source, répertoire_sortie)
+                    os.chmod(répertoire_sortie, 0o777)
             else :
                 shutil.copy2(répertoire_source, répertoire_sortie)
+                os.chmod(répertoire_sortie, 0o777)
         except Exception:
             pass
 
         return répertoire_sortie
-    pass
+    return None
 
 def main():
 
@@ -179,4 +186,3 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
