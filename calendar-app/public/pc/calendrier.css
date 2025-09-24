@@ -170,6 +170,7 @@ table, td, th {
 
 .fc-toolbar-title {
     color: #e4a51c;
+    font-family: 'Fira Sans';
 }
 
 .fc-event-time, .fc-event-title {
